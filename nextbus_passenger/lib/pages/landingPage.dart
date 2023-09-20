@@ -12,26 +12,26 @@ class LandingPage extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
-          Container(
+          SizedBox(
              width: 230,
               height: 130,
               child: Image.asset('images/VerLogoBlue.png',)),
-          Container(
+          SizedBox(
             height: 500, // Set a fixed height for the PageView
             child: PageView(
               children: [
-                Container(
+                SizedBox(
                   height: 500,
                   child: Image.asset('images/CarP1.png'),
                 ),
-                Container(
+                SizedBox(
                   height: 500,
                   child: Image.asset('images/CarP2.png'),
                 ),
-                Container(
+                SizedBox(
                   height: 500,
                   child: Image.asset('images/CarP3.png'),
                 ),
@@ -39,18 +39,18 @@ class LandingPage extends StatelessWidget {
             ),
           ),
 
-          SizedBox(height: 20,),
+          const SizedBox(height: 20,),
 
           MyButton(onTap: (){}, childText: 'Create an Account', width: 280,),
 
-          SizedBox(height: 10,),
+          const SizedBox(height: 10,),
 
           SizedBox(width: getPageWidth(context),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('Already have an account?',style: TextStyle(fontSize: 18),),
-                TextButton(onPressed: (){}, child: Text('Login',style: TextStyle(fontSize: 18),))
+                const Text('Already have an account?',style: TextStyle(fontSize: 18),),
+                TextButton(onPressed: (){}, child: const Text('Login',style: TextStyle(fontSize: 18),))
               ],
             ),
           )

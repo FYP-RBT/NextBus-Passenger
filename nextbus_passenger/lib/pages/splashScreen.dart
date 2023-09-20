@@ -18,11 +18,11 @@ class _SplashState extends State<Splash> {
     // that need to be done before showing the main screen.
 
     // Simulate a delay of 3 seconds using a Future.delayed
-    Future.delayed(Duration(seconds: 5), () {
+    Future.delayed(const Duration(seconds: 5), () {
       // After the delay, navigate to the home page
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => LandingPage()),
+        MaterialPageRoute(builder: (context) => const LandingPage()),
       );
     });
   }
@@ -37,7 +37,7 @@ class _SplashState extends State<Splash> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
 
-            SizedBox(
+            const SizedBox(
               height: 250,
             ),
 
@@ -45,7 +45,7 @@ class _SplashState extends State<Splash> {
               height: 300,
               width: 300,),
 
-            SizedBox(
+            const SizedBox(
               height: 50,
             ),
 
