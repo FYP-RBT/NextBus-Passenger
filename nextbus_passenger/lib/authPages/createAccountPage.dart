@@ -41,7 +41,7 @@ class _CreateAccountState extends State<CreateAccount> {
                 controller: enterNameController,
                 hintText: 'Enter Your Name',
                 obscureText: false,
-                suffixIcon: Icon(Icons.person_2_rounded,color: AppColor.iconColor,),),
+                suffixIcon: Icon(Icons.person_outline_rounded,color: AppColor.iconColor,),),
 
               MyTextField(
                 controller: enterEmailController,
