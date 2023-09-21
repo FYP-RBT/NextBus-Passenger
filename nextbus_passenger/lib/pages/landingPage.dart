@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nextbus_passenger/authPages/createAccountPage.dart';
 import 'package:nextbus_passenger/colors.dart';
 import 'package:nextbus_passenger/componants/button.dart';
 import 'package:nextbus_passenger/methods/sizes.dart';
@@ -41,7 +42,12 @@ class LandingPage extends StatelessWidget {
 
           const SizedBox(height: 20,),
 
-          MyButton(onTap: (){}, childText: 'Create an Account', width: 280,),
+          MyButton(onTap: (){
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => CreateAccount()),
+            );
+          }, childText: 'Create an Account', width: 280,),
 
           const SizedBox(height: 10,),
 
