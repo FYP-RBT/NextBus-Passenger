@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nextbus_passenger/colors.dart';
 
 class MyTextField extends StatelessWidget {
   final controller;
@@ -16,17 +17,19 @@ class MyTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 25.0),
+      padding:  EdgeInsets.symmetric(horizontal: 25.0,vertical:5 ),
       child: TextField(
         controller: controller,
         obscureText: obscureText,
         decoration: InputDecoration(
             suffixIcon: suffixIcon,
-            enabledBorder: const OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.white),
+            enabledBorder:  OutlineInputBorder(
+              borderSide: BorderSide(color: AppColor.textFieldBlue),
+              borderRadius: BorderRadius.circular(10)
             ),
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(color: Colors.grey.shade400),
+                borderRadius: BorderRadius.circular(10)
             ),
             fillColor: Colors.white,
             filled: true,
