@@ -10,6 +10,8 @@ class SquareTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: 80,
+      height: 80,
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.white),

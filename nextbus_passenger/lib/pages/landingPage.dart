@@ -3,6 +3,8 @@ import 'package:nextbus_passenger/authPages/createAccountPage.dart';
 import 'package:nextbus_passenger/colors.dart';
 import 'package:nextbus_passenger/componants/button.dart';
 import 'package:nextbus_passenger/methods/sizes.dart';
+
+import '../authPages/loginPage.dart';
 class LandingPage extends StatelessWidget {
   const LandingPage({super.key});
 
@@ -56,7 +58,12 @@ class LandingPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text('Already have an account?',style: TextStyle(fontSize: 18),),
-                TextButton(onPressed: (){}, child: const Text('Login',style: TextStyle(fontSize: 18),))
+                TextButton(onPressed: (){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginPage()),
+                  );
+                }, child: const Text('Login',style: TextStyle(fontSize: 18),))
               ],
             ),
           )

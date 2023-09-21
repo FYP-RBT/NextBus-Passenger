@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:nextbus_passenger/authPages/loginPage.dart';
 import 'package:nextbus_passenger/colors.dart';
 import 'package:nextbus_passenger/componants/button.dart';
 import 'package:nextbus_passenger/componants/textfeild.dart';
 
+import '../componants/imageTile.dart';
 import '../methods/sizes.dart';
 
 class CreateAccount extends StatefulWidget {
@@ -74,12 +76,32 @@ class _CreateAccountState extends State<CreateAccount> {
               Padding(padding: EdgeInsets.symmetric(horizontal: 25),
               child: Image.asset('images/Or.png')),
 
+              SizedBox(height: 20,),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  // google button
+                  SquareTile(imagePath: 'images/Google.png'),
+
+                  SizedBox(width: 15),
+
+                  // apple button
+                  SquareTile(imagePath: 'images/Facebook.png')
+                ],
+              ),
+
               SizedBox(width: getPageWidth(context),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text('Already have an account?',style: TextStyle(fontSize: 18),),
-                    TextButton(onPressed: (){}, child: const Text('Login',style: TextStyle(fontSize: 18),))
+                    TextButton(onPressed: (){
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginPage()),
+                      );
+                    }, child: const Text('Login',style: TextStyle(fontSize: 18),))
                   ],
                 ),
               )
