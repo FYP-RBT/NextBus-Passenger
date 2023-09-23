@@ -4,6 +4,7 @@ import '../colors.dart';
 import '../componants/button.dart';
 import '../componants/imageTile.dart';
 import '../componants/textfeild.dart';
+import '../methods/sizes.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -59,12 +60,12 @@ class _LoginPageState extends State<LoginPage> {
 
               MyButton(onTap: (){}, childText: 'Log In', width: 180),
 
-              SizedBox(height: 25,),
+              SizedBox(height: 20,),
 
               Padding(padding: EdgeInsets.symmetric(horizontal: 25),
                   child: Image.asset('images/Or.png')),
 
-              SizedBox(height: 20,),
+              SizedBox(height: 15,),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -78,6 +79,21 @@ class _LoginPageState extends State<LoginPage> {
                   SquareTile(imagePath: 'images/Facebook.png')
                 ],
               ),
+
+          SizedBox(width: getPageWidth(context),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                 Text("Don't have an Account?", style: TextStyle(fontSize: 18),),
+                TextButton(onPressed: (){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginPage()),
+                  );
+                }, child: const Text('Create an Account',style: TextStyle(fontSize: 18),))
+              ],
+            ),
+          ),
 
 
             ],
