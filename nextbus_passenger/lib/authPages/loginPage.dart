@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nextbus_passenger/authPages/createAccountPage.dart';
+import 'package:nextbus_passenger/pages/homePage.dart';
 
 import '../colors.dart';
 import '../componants/button.dart';
@@ -80,7 +81,13 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(
                 height: 15,
               ),
-              MyButton(onTap: () {}, childText: 'Log In', width: 180),
+              MyButton(onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => HomePage()),
+                );
+              }, childText: 'Log In', width: 180),
               SizedBox(
                 height: 20,
               ),
