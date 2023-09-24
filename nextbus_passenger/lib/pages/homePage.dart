@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nextbus_passenger/colors.dart';
 import 'package:nextbus_passenger/methods/sizes.dart';
 
-import '../componants/bottumNavBar.dart'; // Assuming you have a file called bottomNavBar.dart
+import '../componants/navBarHome.dart'; // Assuming you have a file called bottomNavBar.dart
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);

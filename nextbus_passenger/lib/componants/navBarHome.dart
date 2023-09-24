@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:nextbus_passenger/colors.dart';
 
+import '../pages/homePage.dart';
+import '../pages/paymentPage.dart';
+
 class MyNavBarHome extends StatefulWidget {
   const MyNavBarHome({super.key});
 
@@ -9,13 +12,6 @@ class MyNavBarHome extends StatefulWidget {
 }
 
 class _MyNavBarHomeState extends State<MyNavBarHome> {
-  int currentIndex = 0;
-
-  setBottomBarIndex(index) {
-    setState(() {
-      currentIndex = index;
-    });
-  }
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
@@ -41,20 +37,25 @@ class _MyNavBarHomeState extends State<MyNavBarHome> {
                 IconButton(
                   icon: Icon(
                     Icons.home,
-                    color: currentIndex == 0 ? AppColor.iconColor : Colors.grey.shade400,
+                    color:  AppColor.iconColor,
                   ),
                   onPressed: () {
-                    setBottomBarIndex(0);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => HomePage()),
+                    );
+
                   },
                   splashColor: Colors.white,
                 ),
                 IconButton(
                     icon: Icon(
                       Icons.dashboard_rounded,
-                      color: currentIndex == 1 ? AppColor.iconColor : Colors.grey.shade400,
+                      color:  Colors.grey.shade400,
                     ),
                     onPressed: () {
-                      setBottomBarIndex(1);
+
                     }),
                 Container(
                   width: size.width * 0.20,
@@ -62,18 +63,23 @@ class _MyNavBarHomeState extends State<MyNavBarHome> {
                 IconButton(
                     icon: Icon(
                       Icons.attach_money_rounded,
-                      color: currentIndex == 2 ? AppColor.iconColor : Colors.grey.shade400,
+                      color:  Colors.grey.shade400,
                     ),
                     onPressed: () {
-                      setBottomBarIndex(2);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => PaymentPage()),
+                      );
+
                     }),
                 IconButton(
                     icon: Icon(
                       Icons.person_2_rounded,
-                      color: currentIndex == 3 ? AppColor.iconColor : Colors.grey.shade400,
+                      color:  Colors.grey.shade400,
                     ),
                     onPressed: () {
-                      setBottomBarIndex(3);
+                     
                     }),
               ],
             ),
