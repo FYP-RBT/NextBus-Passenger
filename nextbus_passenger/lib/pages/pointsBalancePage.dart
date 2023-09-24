@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nextbus_passenger/componants/button.dart';
 import 'package:nextbus_passenger/methods/sizes.dart';
+import 'package:nextbus_passenger/pages/topUpPage.dart';
 
 import '../colors.dart';
 import 'homePage.dart';
@@ -60,7 +61,13 @@ class _PointsBalanceState extends State<PointsBalance> {
 
             SizedBox(height: 15,),
 
-            MyButton(onTap: (){}, childText: 'Top up my Points', width: 230)
+            MyButton(onTap: (){
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => TopUpPage()),
+              );
+            }, childText: 'Top up my Points', width: 230)
 
 
           ],
