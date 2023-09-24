@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nextbus_passenger/colors.dart';
 import 'package:nextbus_passenger/methods/sizes.dart';
-import 'package:nextbus_passenger/pages/topUpPage.dart';
+import 'package:nextbus_passenger/pages/pointsBalancePage.dart';
 
 import '../componants/navBarHome.dart'; // Assuming you have a file called bottomNavBar.dart
 
@@ -92,7 +92,7 @@ class _HomePageState extends State<HomePage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => TopUpPage()),
+                          builder: (context) => PointsBalance()),
                     );
                   },
                     child: Image.asset(

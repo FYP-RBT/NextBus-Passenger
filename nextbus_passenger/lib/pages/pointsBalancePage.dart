@@ -1,23 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:nextbus_passenger/componants/button.dart';
 import 'package:nextbus_passenger/methods/sizes.dart';
 
 import '../colors.dart';
 import 'homePage.dart';
 
-class TopUpPage extends StatefulWidget {
-  const TopUpPage({super.key});
+class PointsBalance extends StatefulWidget {
+  const PointsBalance({super.key});
 
   @override
-  State<TopUpPage> createState() => _TopUpPageState();
+  State<PointsBalance> createState() => _PointsBalanceState();
 }
 
-class _TopUpPageState extends State<TopUpPage> {
+class _PointsBalanceState extends State<PointsBalance> {
+  String get availablePoints => '0.00';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         width: getPageWidth(context),
-        height: 600,
+        height: 550,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(25)
@@ -44,6 +47,20 @@ class _TopUpPageState extends State<TopUpPage> {
                 ),
               ],
             ),
+
+            Image.asset('images/pana.png',width: 215,),
+            
+            Padding(
+              padding: const EdgeInsets.only(top: 25.0),
+              child: Text('CURRENT POINTS',style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold),),
+            ),
+            SizedBox(height: 10,),
+
+            Text(availablePoints,style: TextStyle(fontSize: 40,fontWeight: FontWeight.bold),),
+
+            SizedBox(height: 15,),
+
+            MyButton(onTap: (){}, childText: 'Top up my Points', width: 230)
 
 
           ],
