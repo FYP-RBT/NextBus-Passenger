@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nextbus_passenger/componants/navBarPay.dart';
 import 'package:nextbus_passenger/methods/sizes.dart';
 import 'package:nextbus_passenger/pages/homePage.dart';
+import 'package:nextbus_passenger/pages/topUpPage.dart';
 
 import '../colors.dart';
 import '../componants/navBarHome.dart';
@@ -139,7 +140,13 @@ class _PaymentPageState extends State<PaymentPage> {
                   ),
                 ),
                 IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => TopUpPage()),
+                      );
+                    },
                     icon: Icon(
                       Icons.arrow_forward_ios_rounded,
                       color: Colors.grey.shade500,
