@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nextbus_passenger/colors.dart';
+import 'package:nextbus_passenger/pages/startTripPage.dart';
 
 import '../pages/homePage.dart';
 import '../pages/paymentPage.dart';
@@ -26,7 +27,16 @@ class _MyNavBarHomeState extends State<MyNavBarHome> {
           ),
           Center(
             heightFactor: 0.6,
-            child: FloatingActionButton(backgroundColor: AppColor.iconColor, child: Icon(Icons.location_on), elevation: 0.1, onPressed: () {}),
+            child: FloatingActionButton(
+                backgroundColor: AppColor.iconColor, child: Icon(Icons.location_on), elevation: 0.1,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MapView(),
+                    ),
+                  );
+                }),
           ),
           Container(
             width: size.width,
@@ -69,7 +79,8 @@ class _MyNavBarHomeState extends State<MyNavBarHome> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => PaymentPage()),
+                          builder: (context) => PaymentPage(),
+                        ),
                       );
 
                     }),
