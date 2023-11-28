@@ -20,6 +20,7 @@ class _CreateAccountState extends State<CreateAccount> {
   final enterMobileNumberController = TextEditingController();
   final enterPasswordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+  bool _showPassword = false;
 
   @override
   Widget build(BuildContext context) {
@@ -35,49 +36,153 @@ class _CreateAccountState extends State<CreateAccount> {
               SizedBox(
                   width: 230,
                   height: 130,
-                  child: Image.asset('images/VerLogoBlue.png',)),
+                  child: Image.asset(
+                    'images/VerLogoBlue.png',
+                  )),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25.0,vertical:5 ),
+                child: TextField(
+                  controller: enterNameController,
+                  obscureText: false,
+                  decoration: InputDecoration(
+                      suffixIcon: Icon(
+                        Icons.person_3_outlined,
+                        color: AppColor.iconColor,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: AppColor.textFieldBlue),
+                          borderRadius: BorderRadius.circular(10)),
+                      focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey.shade400),
+                          borderRadius: BorderRadius.circular(10)),
+                      fillColor: Colors.white,
+                      filled: true,
+                      hintText: 'Enter Your Name',
+                      hintStyle: TextStyle(color: Colors.grey[500])),
+                ),
+              ),
 
-              MyTextField(
-                controller: enterNameController,
-                hintText: 'Enter Your Name',
-                obscureText: false,
-                suffixIcon: Icon(Icons.person_outline_rounded,color: AppColor.iconColor,),),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25.0,vertical:5 ),
+                child: TextField(
+                  controller: enterEmailController,
+                  obscureText: false,
+                  decoration: InputDecoration(
+                      suffixIcon: Icon(Icons.email_outlined,color: AppColor.iconColor,),
+                      enabledBorder:  OutlineInputBorder(
+                          borderSide: BorderSide(color: AppColor.textFieldBlue),
+                          borderRadius: BorderRadius.circular(10)
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey.shade400),
+                          borderRadius: BorderRadius.circular(10)
+                      ),
+                      fillColor: Colors.white,
+                      filled: true,
+                      hintText: 'Enter Your Email',
+                      hintStyle: TextStyle(color: Colors.grey[500])),
+                ),
+              ),
 
-              MyTextField(
-                controller: enterEmailController,
-                hintText: 'Enter Your Email',
-                obscureText: false,
-                suffixIcon: Icon(Icons.email_outlined,color: AppColor.iconColor,),),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25.0,vertical:5 ),
+                child: TextField(
+                  controller: enterMobileNumberController,
+                  obscureText: false,
+                  decoration: InputDecoration(
+                      suffixIcon: Icon(Icons.phone_android_rounded,color: AppColor.iconColor,),
+                      enabledBorder:  OutlineInputBorder(
+                          borderSide: BorderSide(color: AppColor.textFieldBlue),
+                          borderRadius: BorderRadius.circular(10)
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey.shade400),
+                          borderRadius: BorderRadius.circular(10)
+                      ),
+                      fillColor: Colors.white,
+                      filled: true,
+                      hintText: 'Enter Your Mobile Number',
+                      hintStyle: TextStyle(color: Colors.grey[500])),
+                ),
+              ),
 
-              MyTextField(
-                controller:enterMobileNumberController,
-                hintText: 'Enter Your Mobile Number',
-                obscureText: false,
-                suffixIcon: Icon(Icons.phone_android_rounded,color: AppColor.iconColor,),),
 
-              MyTextField(
-                controller:enterPasswordController,
-                hintText: 'Enter Your Password',
-                obscureText: true,
-                suffixIcon: Icon(Icons.password_outlined,color: AppColor.iconColor,),),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25.0,vertical:5 ),
+                child: TextField(
+                  controller: enterPasswordController,
+                  obscureText: !_showPassword,
+                  decoration: InputDecoration(
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _showPassword ? Icons.visibility : Icons.visibility_off,color: AppColor.iconColor,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _showPassword = !_showPassword;
+                          });
+                        },
+                      ),
+                      enabledBorder:  OutlineInputBorder(
+                          borderSide: BorderSide(color: AppColor.textFieldBlue),
+                          borderRadius: BorderRadius.circular(10)
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey.shade400),
+                          borderRadius: BorderRadius.circular(10)
+                      ),
+                      fillColor: Colors.white,
+                      filled: true,
+                      hintText: 'Enter Your Password',
+                      hintStyle: TextStyle(color: Colors.grey[500])),
+                ),
+              ),
 
-              MyTextField(
-                controller:confirmPasswordController,
-                hintText: 'Confirm Your Password',
-                obscureText: true,
-                suffixIcon: Icon(Icons.password_outlined,color: AppColor.iconColor,),),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25.0,vertical:5 ),
+                child: TextField(
+                  controller: confirmPasswordController,
+                  obscureText: !_showPassword,
+                  decoration: InputDecoration(
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _showPassword ? Icons.visibility : Icons.visibility_off,color: AppColor.iconColor,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _showPassword = !_showPassword;
+                          });
+                        },
+                      ),
+                      enabledBorder:  OutlineInputBorder(
+                          borderSide: BorderSide(color: AppColor.textFieldBlue),
+                          borderRadius: BorderRadius.circular(10)
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey.shade400),
+                          borderRadius: BorderRadius.circular(10)
+                      ),
+                      fillColor: Colors.white,
+                      filled: true,
+                      hintText: 'Confirm Your Password',
+                      hintStyle: TextStyle(color: Colors.grey[500])),
+                ),
+              ),
 
-              SizedBox(height: 25,),
 
-              MyButton(onTap: (){}, childText: 'Sign Up', width: 180),
-
-              SizedBox(height: 25,),
-              
-              Padding(padding: EdgeInsets.symmetric(horizontal: 25),
-              child: Image.asset('images/Or.png')),
-
-              SizedBox(height: 20,),
-
+              SizedBox(
+                height: 25,
+              ),
+              MyButton(onTap: () {}, childText: 'Sign Up', width: 180),
+              SizedBox(
+                height: 25,
+              ),
+              Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 25),
+                  child: Image.asset('images/Or.png')),
+              SizedBox(
+                height: 20,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
@@ -90,18 +195,27 @@ class _CreateAccountState extends State<CreateAccount> {
                   SquareTile(imagePath: 'images/Facebook.png')
                 ],
               ),
-
-              SizedBox(width: getPageWidth(context),
+              SizedBox(
+                width: getPageWidth(context),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('Already have an account?',style: TextStyle(fontSize: 18),),
-                    TextButton(onPressed: (){
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => LoginPage()),
-                      );
-                    }, child: const Text('Login',style: TextStyle(fontSize: 18),))
+                    const Text(
+                      'Already have an account?',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LoginPage()),
+                          );
+                        },
+                        child: const Text(
+                          'Login',
+                          style: TextStyle(fontSize: 18),
+                        ))
                   ],
                 ),
               )
