@@ -18,6 +18,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final emailOrPhoneController = TextEditingController();
   final passwordController = TextEditingController();
+  bool _showPassword = false;
 
   @override
   Widget build(BuildContext context) {
@@ -51,15 +52,38 @@ class _LoginPageState extends State<LoginPage> {
                 suffixIcon: Icon(
                   Icons.person_outline_rounded,
                   color: AppColor.iconColor,
-                ),
+                ), keyboardType: TextInputType.emailAddress,
               ),
-              MyTextField(
-                controller: passwordController,
-                hintText: 'Enter Your Password',
-                obscureText: true,
-                suffixIcon: Icon(
-                  Icons.password_outlined,
-                  color: AppColor.iconColor,
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 25.0, vertical: 5),
+                child: TextField(
+                  controller: passwordController,
+                  obscureText: !_showPassword,
+                  decoration: InputDecoration(
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _showPassword
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: AppColor.iconColor,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _showPassword = !_showPassword;
+                          });
+                        },
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: AppColor.textFieldBlue),
+                          borderRadius: BorderRadius.circular(10)),
+                      focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey.shade400),
+                          borderRadius: BorderRadius.circular(10)),
+                      fillColor: Colors.white,
+                      filled: true,
+                      hintText: 'Enter Your Password',
+                      hintStyle: TextStyle(color: Colors.grey[500])),
                 ),
               ),
               Padding(
@@ -71,7 +95,8 @@ class _LoginPageState extends State<LoginPage> {
                         onPressed: () {},
                         child: Text(
                           'Forgot Password?',
-                          style: TextStyle(color: Colors.redAccent,
+                          style: TextStyle(
+                            color: Colors.redAccent,
                             fontSize: 18,
                           ),
                         )),
@@ -81,13 +106,15 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(
                 height: 15,
               ),
-              MyButton(onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => HomePage()),
-                );
-              }, childText: 'Log In', width: 180),
+              MyButton(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => HomePage()),
+                    );
+                  },
+                  childText: 'Log In',
+                  width: 180),
               SizedBox(
                 height: 20,
               ),
