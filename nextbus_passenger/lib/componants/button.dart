@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nextbus_passenger/colors.dart';
 
 class MyButton extends StatelessWidget {
-  final Function()? onTap;
+  final VoidCallback? onTap;
   final String childText;
   final double width;
 
@@ -10,26 +10,22 @@ class MyButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 55,
-        width:width,
-        padding: const EdgeInsets.all(5),
-        decoration: BoxDecoration(
-          color: AppColor.buttonColor,
-          borderRadius: BorderRadius.circular(15),
+    return MaterialButton(
+      onPressed: onTap,
+      child: Text(
+        childText,
+        style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: 22,
         ),
-        child: Center(
-          child: Text(
-            childText,
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 22,
-            ),
-          ),
-        ),
+      ),
+      height: 55,
+      minWidth: width,
+      color: AppColor.buttonColor,
+      padding: const EdgeInsets.all(5),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
       ),
     );
   }

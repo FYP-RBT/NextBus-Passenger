@@ -71,51 +71,61 @@ class _HomePageState extends State<HomePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-
-                GestureDetector(
-                  onTap: (){
+                MaterialButton(
+                  onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => MapView(),
                       ),
                     );
-
                   },
-                    child: Image.asset(
-                  'images/StartTripButton.png',
-                  width: 130,
-                )),
-                GestureDetector(
-                    child: Image.asset(
-                  'images/FavouritesButton.png',
-                  width: 130,
-                )),
+                  child: Image.asset(
+                    'images/StartTripButton.png',
+                    width: 130,
+                  ),
+                ),
+                MaterialButton(
+                  onPressed: () {
+                    // Define the action on tap
+                  },
+                  child: Image.asset(
+                    'images/FavouritesButton.png',
+                    width: 130,
+                  ),
+                ),
               ],
             ),
             SizedBox(
               height: 30,
             ),
+            // Row for Payment and Settings Buttons
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                GestureDetector(
-                  onTap: (){
+                MaterialButton(
+                  onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => PointsBalance()),
+                        builder: (context) => PointsBalance(),
+                      ),
                     );
                   },
-                    child: Image.asset(
-                  'images/PaymentButton.png',
-                  width: 130,
-                )),
-                GestureDetector(
-                    child: Image.asset(
-                  'images/SettingsButton.png',
-                  width: 130,
-                )),
+                  child: Image.asset(
+                    'images/PaymentButton.png',
+                    width: 130,
+                  ),
+                ),
+                MaterialButton(
+                  onPressed: () {
+                    // Define the action on tap
+                  },
+                  child: Image.asset(
+                    'images/SettingsButton.png',
+                    width: 130,
+                  ),
+                ),
               ],
             ),
             SizedBox(
