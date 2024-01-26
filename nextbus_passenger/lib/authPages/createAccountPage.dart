@@ -3,6 +3,7 @@ import 'package:nextbus_passenger/authPages/loginPage.dart';
 import 'package:nextbus_passenger/colors.dart';
 import 'package:nextbus_passenger/componants/button.dart';
 import 'package:nextbus_passenger/componants/textfeild.dart';
+import 'package:nextbus_passenger/methods/commonMethods.dart';
 
 import '../componants/imageTile.dart';
 import '../methods/sizes.dart';
@@ -21,6 +22,12 @@ class _CreateAccountState extends State<CreateAccount> {
   final enterPasswordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   bool _showPassword = false;
+
+  CommonMethods cMethods = CommonMethods();
+
+  checkIfNetworkIsAvailable(){
+    cMethods.checkConnectivity(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -173,7 +180,10 @@ class _CreateAccountState extends State<CreateAccount> {
               SizedBox(
                 height: 25,
               ),
-              MyButton(onTap: () {}, childText: 'Sign Up', width: 180),
+              MyButton(onTap: () {
+                checkIfNetworkIsAvailable();
+
+              }, childText: 'Sign Up', width: 180),
               SizedBox(
                 height: 25,
               ),
