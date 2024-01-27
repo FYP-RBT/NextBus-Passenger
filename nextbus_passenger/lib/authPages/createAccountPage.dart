@@ -25,8 +25,29 @@ class _CreateAccountState extends State<CreateAccount> {
 
   CommonMethods cMethods = CommonMethods();
 
-  checkIfNetworkIsAvailable(){
+  checkIfNetworkIsAvailable() {
     cMethods.checkConnectivity(context);
+    signUpFormValidation();
+  }
+
+  signUpFormValidation() {
+    if (enterNameController.text.trim().length < 3) {
+      snackBar(
+          context, 'Your name must be 4 or more characters', Colors.redAccent);
+    } else if (enterMobileNumberController.text.trim().length < 8) {
+      snackBar(context, 'Your mobile number must be 8 or more characters',
+          Colors.redAccent);
+    } else if (!enterEmailController.text.contains('@')) {
+      snackBar(context, 'Please enter a valid email', Colors.redAccent);
+    } else if (enterPasswordController.text.trim().length < 6) {
+      snackBar(context, 'Your password must be 6 or more characters',
+          Colors.redAccent);
+    } else if (enterPasswordController.text.trim() !=
+        confirmPasswordController.text.trim()) {
+      snackBar(context, 'Passwords do not match', Colors.redAccent);
+    } else {
+      // Proceed with the sign-up process as all validations are passed
+    }
   }
 
   @override
@@ -47,7 +68,8 @@ class _CreateAccountState extends State<CreateAccount> {
                     'images/VerLogoBlue.png',
                   )),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0,vertical:5 ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 25.0, vertical: 5),
                 child: TextField(
                   controller: enterNameController,
                   obscureText: false,
@@ -68,61 +90,65 @@ class _CreateAccountState extends State<CreateAccount> {
                       hintStyle: TextStyle(color: Colors.grey[500])),
                 ),
               ),
-
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0,vertical:5 ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 25.0, vertical: 5),
                 child: TextField(
                   controller: enterEmailController,
                   obscureText: false,
                   decoration: InputDecoration(
-                      suffixIcon: Icon(Icons.email_outlined,color: AppColor.iconColor,),
-                      enabledBorder:  OutlineInputBorder(
-                          borderSide: BorderSide(color: AppColor.textFieldBlue),
-                          borderRadius: BorderRadius.circular(10)
+                      suffixIcon: Icon(
+                        Icons.email_outlined,
+                        color: AppColor.iconColor,
                       ),
+                      enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: AppColor.textFieldBlue),
+                          borderRadius: BorderRadius.circular(10)),
                       focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.grey.shade400),
-                          borderRadius: BorderRadius.circular(10)
-                      ),
+                          borderRadius: BorderRadius.circular(10)),
                       fillColor: Colors.white,
                       filled: true,
                       hintText: 'Enter Your Email',
                       hintStyle: TextStyle(color: Colors.grey[500])),
                 ),
               ),
-
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0,vertical:5 ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 25.0, vertical: 5),
                 child: TextField(
                   controller: enterMobileNumberController,
                   obscureText: false,
                   decoration: InputDecoration(
-                      suffixIcon: Icon(Icons.phone_android_rounded,color: AppColor.iconColor,),
-                      enabledBorder:  OutlineInputBorder(
-                          borderSide: BorderSide(color: AppColor.textFieldBlue),
-                          borderRadius: BorderRadius.circular(10)
+                      suffixIcon: Icon(
+                        Icons.phone_android_rounded,
+                        color: AppColor.iconColor,
                       ),
+                      enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: AppColor.textFieldBlue),
+                          borderRadius: BorderRadius.circular(10)),
                       focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.grey.shade400),
-                          borderRadius: BorderRadius.circular(10)
-                      ),
+                          borderRadius: BorderRadius.circular(10)),
                       fillColor: Colors.white,
                       filled: true,
                       hintText: 'Enter Your Mobile Number',
                       hintStyle: TextStyle(color: Colors.grey[500])),
                 ),
               ),
-
-
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0,vertical:5 ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 25.0, vertical: 5),
                 child: TextField(
                   controller: enterPasswordController,
                   obscureText: !_showPassword,
                   decoration: InputDecoration(
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _showPassword ? Icons.visibility : Icons.visibility_off,color: AppColor.iconColor,
+                          _showPassword
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: AppColor.iconColor,
                         ),
                         onPressed: () {
                           setState(() {
@@ -130,30 +156,31 @@ class _CreateAccountState extends State<CreateAccount> {
                           });
                         },
                       ),
-                      enabledBorder:  OutlineInputBorder(
+                      enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(color: AppColor.textFieldBlue),
-                          borderRadius: BorderRadius.circular(10)
-                      ),
+                          borderRadius: BorderRadius.circular(10)),
                       focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.grey.shade400),
-                          borderRadius: BorderRadius.circular(10)
-                      ),
+                          borderRadius: BorderRadius.circular(10)),
                       fillColor: Colors.white,
                       filled: true,
                       hintText: 'Enter Your Password',
                       hintStyle: TextStyle(color: Colors.grey[500])),
                 ),
               ),
-
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0,vertical:5 ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 25.0, vertical: 5),
                 child: TextField(
                   controller: confirmPasswordController,
                   obscureText: !_showPassword,
                   decoration: InputDecoration(
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _showPassword ? Icons.visibility : Icons.visibility_off,color: AppColor.iconColor,
+                          _showPassword
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: AppColor.iconColor,
                         ),
                         onPressed: () {
                           setState(() {
@@ -161,29 +188,27 @@ class _CreateAccountState extends State<CreateAccount> {
                           });
                         },
                       ),
-                      enabledBorder:  OutlineInputBorder(
+                      enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(color: AppColor.textFieldBlue),
-                          borderRadius: BorderRadius.circular(10)
-                      ),
+                          borderRadius: BorderRadius.circular(10)),
                       focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.grey.shade400),
-                          borderRadius: BorderRadius.circular(10)
-                      ),
+                          borderRadius: BorderRadius.circular(10)),
                       fillColor: Colors.white,
                       filled: true,
                       hintText: 'Confirm Your Password',
                       hintStyle: TextStyle(color: Colors.grey[500])),
                 ),
               ),
-
-
               SizedBox(
                 height: 25,
               ),
-              MyButton(onTap: () {
-                checkIfNetworkIsAvailable();
-
-              }, childText: 'Sign Up', width: 180),
+              MyButton(
+                  onTap: () {
+                    checkIfNetworkIsAvailable();
+                  },
+                  childText: 'Sign Up',
+                  width: 180),
               SizedBox(
                 height: 25,
               ),
