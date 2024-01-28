@@ -30,12 +30,12 @@ class _MyNavBarHomeState extends State<MyNavBarHome> {
             child: FloatingActionButton(
                 backgroundColor: AppColor.iconColor, child: Icon(Icons.location_on), elevation: 0.1,
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => MapView(),
-                    ),
-                  );
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => MapView(),
+                  //   ),
+                  // );
                 }),
           ),
           Container(

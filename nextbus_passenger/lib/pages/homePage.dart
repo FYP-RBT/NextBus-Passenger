@@ -73,12 +73,12 @@ class _HomePageState extends State<HomePage> {
               children: [
                 MaterialButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MapView(),
-                      ),
-                    );
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (context) => MapView(),
+                    //   ),
+                    // );
                   },
                   child: Image.asset(
                     'images/StartTripButton.png',

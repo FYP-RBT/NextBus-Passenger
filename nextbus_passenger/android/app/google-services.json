@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "778182731083",
+    "project_id": "next-bus-rbt",
+    "storage_bucket": "next-bus-rbt.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:778182731083:android:10be3ddc15e42a7d2934ce",
+        "android_client_info": {
+          "package_name": "com.shahiru.nextbuspassenger"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDHRQVRz9ND0bjCDWeH0r5dBajjxCYITCs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
