@@ -1,7 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:nextbus_passenger/authPages/loginPage.dart';
 import 'package:nextbus_passenger/colors.dart';
 import 'package:nextbus_passenger/componants/button.dart';
+import 'package:nextbus_passenger/componants/loading.dart';
 import 'package:nextbus_passenger/componants/textfeild.dart';
 import 'package:nextbus_passenger/methods/commonMethods.dart';
 
@@ -46,8 +49,52 @@ class _CreateAccountState extends State<CreateAccount> {
         confirmPasswordController.text.trim()) {
       snackBar(context, 'Passwords do not match', Colors.redAccent);
     } else {
+      registerNewUser();
       // Proceed with the sign-up process as all validations are passed
     }
+  }
+
+  registerNewUser() async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) =>
+          LoadingDialog(messageText: 'Registering your account...'),
+    );
+
+    final User? userFirebase = (await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(
+                email: enterEmailController.text.trim(),
+                password: enterPasswordController.text.trim(),
+    ).catchError((errorMsg){
+      Navigator.pop(context);
+      snackBar(context, errorMsg.toString(), Colors.red);
+    })
+    ).user;
+
+    if(!context.mounted)return;
+    Navigator.pop(context);
+
+    DatabaseReference userRef = FirebaseDatabase.instance.ref().child('users').child(userFirebase!.uid);
+    Map userDataMap =
+        {
+          "name": enterNameController.text.trim(),
+          "email": enterEmailController.text.trim(),
+          "phone": enterMobileNumberController.text.trim(),
+          "id": userFirebase.uid,
+          "blockStatus": "no",
+        };
+    userRef.set(userDataMap);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => LoginPage()),
+    );
+
+    snackBar(context, 'Account created, you can Login now!', Colors.green.shade500);
+
+
   }
 
   @override
