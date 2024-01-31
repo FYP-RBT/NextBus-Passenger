@@ -1,11 +1,16 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:nextbus_passenger/authPages/createAccountPage.dart';
+import 'package:nextbus_passenger/comman_var.dart';
 import 'package:nextbus_passenger/pages/homePage.dart';
 
 import '../colors.dart';
 import '../componants/button.dart';
 import '../componants/imageTile.dart';
+import '../componants/loading.dart';
 import '../componants/textfeild.dart';
+import '../methods/commonMethods.dart';
 import '../methods/sizes.dart';
 
 class LoginPage extends StatefulWidget {
@@ -19,6 +24,75 @@ class _LoginPageState extends State<LoginPage> {
   final emailOrPhoneController = TextEditingController();
   final passwordController = TextEditingController();
   bool _showPassword = false;
+
+  CommonMethods cMethods = CommonMethods();
+
+  checkIfNetworkIsAvailable() {
+    cMethods.checkConnectivity(context);
+    signInFormValidation();
+  }
+
+  signInFormValidation() {
+    if (!emailOrPhoneController.text.contains('@')) {
+      snackBar(context, 'Please enter a valid email', Colors.redAccent);
+    } else if (passwordController.text.trim().length < 6) {
+      snackBar(context, 'Your password must be 6 or more characters',
+          Colors.redAccent);
+    } else {
+      signInUser();
+      // Proceed with the sign-up process as all validations are passed
+    }
+  }
+
+  signInUser()async{
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) =>
+          LoadingDialog(messageText: 'Allowing you to login...'),
+    );
+
+    final User? userFirebase = (await FirebaseAuth.instance
+        .signInWithEmailAndPassword(
+      email: emailOrPhoneController.text.trim(),
+      password: passwordController.text.trim(),
+    ).catchError((errorMsg){
+      Navigator.pop(context);
+      snackBar(context, 'Incorrect email or password!', Colors.red);
+    })
+    ).user;
+
+    if(!context.mounted)return;
+    Navigator.pop(context);
+
+    if(userFirebase != null){
+      DatabaseReference userRef = FirebaseDatabase.instance.ref().child('users').child(userFirebase.uid);
+      userRef.once().then((snap){
+        if(snap.snapshot.value!=null){
+          if((snap.snapshot.value as Map)['blockStatus']=='no'){
+            userName = (snap.snapshot.value as Map)['name'];
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => HomePage()),
+            );
+
+        }
+          else{
+            snackBar(context, 'You are blocked, Contact admin!',
+                Colors.redAccent);
+            FirebaseAuth.instance.signOut();
+
+          }
+
+        }
+        else{
+          FirebaseAuth.instance.signOut();
+          snackBar(context, 'Your record do not exist as user..',
+              Colors.redAccent);
+        }
+        });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +121,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               MyTextField(
                 controller: emailOrPhoneController,
-                hintText: 'Email or Phone Number',
+                hintText: 'Enter your email',
                 obscureText: false,
                 suffixIcon: Icon(
                   Icons.person_outline_rounded,
@@ -108,10 +182,8 @@ class _LoginPageState extends State<LoginPage> {
               ),
               MyButton(
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => HomePage()),
-                    );
+
+                    checkIfNetworkIsAvailable();
                   },
                   childText: 'Log In',
                   width: 180),

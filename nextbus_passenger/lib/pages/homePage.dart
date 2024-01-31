@@ -5,6 +5,7 @@ import 'package:nextbus_passenger/methods/sizes.dart';
 import 'package:nextbus_passenger/pages/pointsBalancePage.dart';
 import 'package:nextbus_passenger/pages/startTripPage.dart';
 
+import '../comman_var.dart';
 import '../componants/navBarHome.dart'; // Assuming you have a file called bottomNavBar.dart
 
 class HomePage extends StatefulWidget {
@@ -15,7 +16,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String get userName => "Shahiru Edirisinghe";
+  // String get userName => "Shahiru Edirisinghe";
   final destinationController = TextEditingController();
 
   @override
