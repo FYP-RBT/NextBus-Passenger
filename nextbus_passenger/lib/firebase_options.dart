@@ -44,38 +44,37 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBFQ5DH-9LATLSVaTpW4Akil24bDZWTbvE',
-    appId: '1:778182731083:web:3a33ad6c0dbd286c2934ce',
-    messagingSenderId: '778182731083',
-    projectId: 'next-bus-rbt',
-    authDomain: 'next-bus-rbt.firebaseapp.com',
-    storageBucket: 'next-bus-rbt.appspot.com',
-    measurementId: 'G-QRLHYRZL0X',
+    apiKey: 'AIzaSyC2PYzqBv1eG_p7jOvIu4ljYyq6jHETfM4',
+    appId: '1:620669314084:web:c539b4c6341048428ca4b1',
+    messagingSenderId: '620669314084',
+    projectId: 'next-bus-rbt-3a502',
+    authDomain: 'next-bus-rbt-3a502.firebaseapp.com',
+    storageBucket: 'next-bus-rbt-3a502.appspot.com',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDHRQVRz9ND0bjCDWeH0r5dBajjxCYITCs',
-    appId: '1:778182731083:android:10be3ddc15e42a7d2934ce',
-    messagingSenderId: '778182731083',
-    projectId: 'next-bus-rbt',
-    storageBucket: 'next-bus-rbt.appspot.com',
+    apiKey: 'AIzaSyBsxELn_PL513ny9ZMo8AORfg0tf-m2aKk',
+    appId: '1:620669314084:android:76d2ef890b605b258ca4b1',
+    messagingSenderId: '620669314084',
+    projectId: 'next-bus-rbt-3a502',
+    storageBucket: 'next-bus-rbt-3a502.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyA7Ysi891GumwZSTDFcHze6KrKP8RXuU1A',
-    appId: '1:778182731083:ios:8d4e7e5b947382b42934ce',
-    messagingSenderId: '778182731083',
-    projectId: 'next-bus-rbt',
-    storageBucket: 'next-bus-rbt.appspot.com',
+    apiKey: 'AIzaSyABV-nYhUVp4kHV5RZSxBDYg8ET2PkpFGo',
+    appId: '1:620669314084:ios:ff56af3ed65e03998ca4b1',
+    messagingSenderId: '620669314084',
+    projectId: 'next-bus-rbt-3a502',
+    storageBucket: 'next-bus-rbt-3a502.appspot.com',
     iosBundleId: 'com.example.nextbusPassenger',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyA7Ysi891GumwZSTDFcHze6KrKP8RXuU1A',
-    appId: '1:778182731083:ios:c454625271dae4192934ce',
-    messagingSenderId: '778182731083',
-    projectId: 'next-bus-rbt',
-    storageBucket: 'next-bus-rbt.appspot.com',
+    apiKey: 'AIzaSyABV-nYhUVp4kHV5RZSxBDYg8ET2PkpFGo',
+    appId: '1:620669314084:ios:5d212e16845ecf4d8ca4b1',
+    messagingSenderId: '620669314084',
+    projectId: 'next-bus-rbt-3a502',
+    storageBucket: 'next-bus-rbt-3a502.appspot.com',
     iosBundleId: 'com.example.nextbusPassenger.RunnerTests',
   );
 }
