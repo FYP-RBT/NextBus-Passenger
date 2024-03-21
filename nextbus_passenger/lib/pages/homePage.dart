@@ -1,12 +1,16 @@
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:nextbus_passenger/colors.dart';
 import 'package:nextbus_passenger/methods/sizes.dart';
+import 'package:nextbus_passenger/pages/landingPage.dart';
 import 'package:nextbus_passenger/pages/pointsBalancePage.dart';
 import 'package:nextbus_passenger/pages/startTripPage.dart';
 
 import '../comman_var.dart';
-import '../componants/navBarHome.dart'; // Assuming you have a file called bottomNavBar.dart
+import '../componants/navBarHome.dart';
+import '../methods/commonMethods.dart'; // Assuming you have a file called bottomNavBar.dart
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -18,6 +22,48 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   // String get userName => "Shahiru Edirisinghe";
   final destinationController = TextEditingController();
+
+  void initState() {
+    super.initState();
+    getUserInfoAndCheckBlockStatus();
+  }
+  
+  getUserInfoAndCheckBlockStatus() async{
+    DatabaseReference userRef = FirebaseDatabase.instance.ref()
+        .child('users')
+        .child(FirebaseAuth.instance.currentUser!.uid);
+
+    await userRef.once().then((snap){
+      if(snap.snapshot.value!=null){
+        if((snap.snapshot.value as Map)['blockStatus']=='no'){
+          setState(() {
+            userName = (snap.snapshot.value as Map)['name'];
+            userEmail = (snap.snapshot.value as Map)['email'];
+          });
+
+        }
+        else{
+          snackBar(context, 'You are blocked, Contact admin!',
+              Colors.redAccent);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => LandingPage()),
+          );
+
+          FirebaseAuth.instance.signOut();
+
+        }
+
+      }
+      else{
+        FirebaseAuth.instance.signOut();
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => LandingPage()),
+        );
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -169,7 +215,7 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      bottomNavigationBar: MyNavBarHome(),
+      bottomNavigationBar: MyNavBar(selectedIndex: 0,),
     );
   }
 }

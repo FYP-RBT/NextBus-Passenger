@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nextbus_passenger/componants/navBarPay.dart';
+
 import 'package:nextbus_passenger/methods/sizes.dart';
 import 'package:nextbus_passenger/pages/homePage.dart';
 import 'package:nextbus_passenger/pages/pointsBalancePage.dart';
@@ -224,7 +224,7 @@ class _PaymentPageState extends State<PaymentPage> {
           )
         ],
       ),
-      bottomNavigationBar: MyNavBarPayment(),
+      bottomNavigationBar: MyNavBar(selectedIndex: 2,),
     );
   }
 }

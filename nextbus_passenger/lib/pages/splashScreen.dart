@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nextbus_passenger/colors.dart';
+import 'package:nextbus_passenger/pages/homePage.dart';
 import 'package:nextbus_passenger/pages/landingPage.dart';
 
 class Splash extends StatefulWidget {
@@ -22,7 +24,7 @@ class _SplashState extends State<Splash> {
       // After the delay, navigate to the home page
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const LandingPage()),
+        MaterialPageRoute(builder: (context) => FirebaseAuth.instance.currentUser == null ? LandingPage() :HomePage()),
       );
     });
   }
