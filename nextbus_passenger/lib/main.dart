@@ -2,7 +2,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:nextbus_passenger/pages/splashScreen.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 
+import 'appInfo/app_info.dart';
 import 'firebase_options.dart';
 
 Future <void> main() async {
@@ -24,9 +26,12 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home:Splash(),
+    return ChangeNotifierProvider(
+      create: (context) => AppInfo(),
+      child: const MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home:Splash(),
+      ),
     );
   }
 }
