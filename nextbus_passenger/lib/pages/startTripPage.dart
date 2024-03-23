@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:nextbus_passenger/comman_var.dart';
+import 'package:nextbus_passenger/methods/commonMethods.dart';
 import 'package:nextbus_passenger/pages/search_destination_page.dart';
 
 import '../colors.dart';
@@ -51,6 +52,9 @@ class _StarTripPageState extends State<StarTripPage> {
     CameraPosition cameraPosition = CameraPosition(target: positionOfUserInLatLng,zoom: 15);
 
     controllerGoogleMap!.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+    
+    await CommonMethods.convertGeoGraphicCoOrdinatesIntoHumanReadableAddress(currentPositionOfUser!, context);
+    
   }
 
   @override
