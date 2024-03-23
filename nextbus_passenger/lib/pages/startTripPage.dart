@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:nextbus_passenger/comman_var.dart';
+import 'package:nextbus_passenger/pages/search_destination_page.dart';
 
 import '../colors.dart';
 import 'homePage.dart';
@@ -123,7 +124,7 @@ class _StarTripPageState extends State<StarTripPage> {
                   ElevatedButton(
                     onPressed: ()
                     {
-                      // Navigator.push(context, MaterialPageRoute(builder: (c)=> SearchDestinationPage()));
+                      Navigator.push(context, MaterialPageRoute(builder: (c)=> SearchDestinationPage()));
                     },
                     style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
