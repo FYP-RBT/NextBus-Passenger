@@ -16,6 +16,7 @@ import '../appInfo/app_info.dart';
 import '../colors.dart';
 import '../componants/loading.dart';
 import '../models/direction_details.dart';
+import '../trip_var.dart';
 import 'homePage.dart';
 
 class StarTripPage extends StatefulWidget {
@@ -42,6 +43,11 @@ class _StarTripPageState extends State<StarTripPage> {
 
   Set<Marker> markerSet = {};
   Set<Circle> circleSet = {};
+
+  bool isDrawerOpened = true;
+
+  double requestContainerHeight = 0;
+  double tripContainerHeight = 0;
 
   void updateMapTheme(GoogleMapController controller) {
     getJsonFileFromThemes('themes/map_night.json')
@@ -85,6 +91,7 @@ class _StarTripPageState extends State<StarTripPage> {
       searchContainerHeight = 0;
       bottomMapPadding = 240;
       rideDetailsContainerHeight = 242;
+      isDrawerOpened = false;
     });
   }
 
@@ -231,6 +238,30 @@ class _StarTripPageState extends State<StarTripPage> {
     });
   }
 
+
+  resetAppNow()
+  {
+    setState(() {
+      polylineCoOrdinates.clear();
+      polylineSet.clear();
+      markerSet.clear();
+      circleSet.clear();
+      rideDetailsContainerHeight = 0;
+      requestContainerHeight = 0;
+      tripContainerHeight = 0;
+      searchContainerHeight = 250;
+      bottomMapPadding = 300;
+      isDrawerOpened = true;
+
+      status = "";
+      nameDriver = "";
+      photoDriver = "";
+      phoneNumberDriver = "";
+      carDetailsDriver = "";
+      tripStatusDisplay = 'Driver is Arriving';
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -281,13 +312,20 @@ class _StarTripPageState extends State<StarTripPage> {
                 radius: 20,
                 child: IconButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => HomePage()),
-                      );
+                      if(isDrawerOpened == true)
+                      {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => HomePage()),
+                        );
+                      }
+                      else
+                      {
+                        resetAppNow();
+                      }
                     },
                     icon: Icon(
-                      Icons.arrow_back_rounded,
+                      isDrawerOpened == true ? Icons.arrow_back_rounded : Icons.close,
                       color: AppColor.iconColor,
                     )),
               ),
