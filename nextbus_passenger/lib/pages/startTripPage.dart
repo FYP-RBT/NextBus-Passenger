@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:nextbus_passenger/comman_var.dart';
@@ -25,7 +26,8 @@ class StarTripPage extends StatefulWidget {
 }
 
 class _StarTripPageState extends State<StarTripPage> {
-  final Completer<GoogleMapController> googleMapCompleterController = Completer<GoogleMapController>();
+  final Completer<GoogleMapController> googleMapCompleterController =
+      Completer<GoogleMapController>();
   GoogleMapController? controllerGoogleMap;
   CommonMethods cMethods = CommonMethods();
   Position? currentPositionOfUser;
@@ -35,39 +37,47 @@ class _StarTripPageState extends State<StarTripPage> {
   double rideDetailsContainerHeight = 0;
   DirectionDetails? tripDirectionDetailsInfo;
 
-  void updateMapTheme (GoogleMapController controller)
-  {
-    getJsonFileFromThemes('themes/map_night.json').then((value)=>setGoogleMapStyle(value,controller));
+  List<LatLng> polylineCoOrdinates = [];
+  Set<Polyline> polylineSet = {};
+
+  Set<Marker> markerSet = {};
+  Set<Circle> circleSet = {};
+
+  void updateMapTheme(GoogleMapController controller) {
+    getJsonFileFromThemes('themes/map_night.json')
+        .then((value) => setGoogleMapStyle(value, controller));
   }
 
-  Future<String> getJsonFileFromThemes (String mapStylePath) async{
+  Future<String> getJsonFileFromThemes(String mapStylePath) async {
     ByteData byteData = await rootBundle.load(mapStylePath);
-    var list = byteData.buffer.asUint8List(byteData.offsetInBytes,byteData.lengthInBytes);
+    var list = byteData.buffer
+        .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
     return utf8.decode(list);
   }
 
-  setGoogleMapStyle(String googleMapStyle, GoogleMapController controller)
-  {
+  setGoogleMapStyle(String googleMapStyle, GoogleMapController controller) {
     controller.setMapStyle(googleMapStyle);
   }
 
-  getCurrentLiveLocationOfUser() async
-  {
-    Position positionOfUser = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.bestForNavigation);
-    currentPositionOfUser=positionOfUser;
+  getCurrentLiveLocationOfUser() async {
+    Position positionOfUser = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.bestForNavigation);
+    currentPositionOfUser = positionOfUser;
 
-    LatLng positionOfUserInLatLng=LatLng(currentPositionOfUser!.latitude, currentPositionOfUser!.longitude);
+    LatLng positionOfUserInLatLng = LatLng(
+        currentPositionOfUser!.latitude, currentPositionOfUser!.longitude);
 
-    CameraPosition cameraPosition = CameraPosition(target: positionOfUserInLatLng,zoom: 15);
+    CameraPosition cameraPosition =
+        CameraPosition(target: positionOfUserInLatLng, zoom: 15);
 
-    controllerGoogleMap!.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
-    
-    await CommonMethods.convertGeoGraphicCoOrdinatesIntoHumanReadableAddress(currentPositionOfUser!, context);
-    
+    controllerGoogleMap!
+        .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+
+    await CommonMethods.convertGeoGraphicCoOrdinatesIntoHumanReadableAddress(
+        currentPositionOfUser!, context);
   }
 
-  displayUserRideDetailsContainer() async
-  {
+  displayUserRideDetailsContainer() async {
     ///Directions API
     await retrieveDirectionDetails();
 
@@ -78,57 +88,175 @@ class _StarTripPageState extends State<StarTripPage> {
     });
   }
 
-  retrieveDirectionDetails() async
-  {
-    var pickUpLocation = Provider.of<AppInfo>(context, listen: false).pickUpLocation;
-    var dropOffDestinationLocation = Provider.of<AppInfo>(context, listen: false).dropOffLocation;
+  retrieveDirectionDetails() async {
+    var pickUpLocation =
+        Provider.of<AppInfo>(context, listen: false).pickUpLocation;
+    var dropOffDestinationLocation =
+        Provider.of<AppInfo>(context, listen: false).dropOffLocation;
 
-    var pickupGeoGraphicCoOrdinates = LatLng(pickUpLocation!.latitudePosition!, pickUpLocation.longitudePosition!);
-    var dropOffDestinationGeoGraphicCoOrdinates = LatLng(dropOffDestinationLocation!.latitudePosition!, dropOffDestinationLocation.longitudePosition!);
+    var pickupGeoGraphicCoOrdinates = LatLng(
+        pickUpLocation!.latitudePosition!, pickUpLocation.longitudePosition!);
+    var dropOffDestinationGeoGraphicCoOrdinates = LatLng(
+        dropOffDestinationLocation!.latitudePosition!,
+        dropOffDestinationLocation.longitudePosition!);
 
     showDialog(
       barrierDismissible: false,
       context: context,
-      builder: (BuildContext context) => LoadingDialog(messageText: "Getting direction..."),
+      builder: (BuildContext context) =>
+          LoadingDialog(messageText: "Getting direction..."),
     );
 
     ///Directions API
-    var detailsFromDirectionAPI = await CommonMethods.getDirectionDetailsFromAPI(pickupGeoGraphicCoOrdinates, dropOffDestinationGeoGraphicCoOrdinates);
+    var detailsFromDirectionAPI =
+        await CommonMethods.getDirectionDetailsFromAPI(
+            pickupGeoGraphicCoOrdinates,
+            dropOffDestinationGeoGraphicCoOrdinates);
     setState(() {
       tripDirectionDetailsInfo = detailsFromDirectionAPI;
     });
 
-    // Navigator.pop(context);
+    Navigator.pop(context);
 
+    ///draw route from pickup to dropOffDestination
+    PolylinePoints pointsPolyline = PolylinePoints();
+    List<PointLatLng> latLngPointsFromPickUpToDestination =
+        pointsPolyline.decodePolyline(tripDirectionDetailsInfo!.encodedPoints!);
 
+    polylineCoOrdinates.clear();
+    if (latLngPointsFromPickUpToDestination.isNotEmpty) {
+      latLngPointsFromPickUpToDestination.forEach((PointLatLng latLngPoint) {
+        polylineCoOrdinates
+            .add(LatLng(latLngPoint.latitude, latLngPoint.longitude));
+      });
+    }
+
+    polylineSet.clear();
+    setState(() {
+      Polyline polyline = Polyline(
+        polylineId: const PolylineId("polylineID"),
+        color: Colors.pink,
+        points: polylineCoOrdinates,
+        jointType: JointType.round,
+        width: 4,
+        startCap: Cap.roundCap,
+        endCap: Cap.roundCap,
+        geodesic: true,
+      );
+
+      polylineSet.add(polyline);
+    });
+
+    ///fit the polyline into the map
+    LatLngBounds boundsLatLng;
+    if (pickupGeoGraphicCoOrdinates.latitude >
+            dropOffDestinationGeoGraphicCoOrdinates.latitude &&
+        pickupGeoGraphicCoOrdinates.longitude >
+            dropOffDestinationGeoGraphicCoOrdinates.longitude) {
+      boundsLatLng = LatLngBounds(
+        southwest: dropOffDestinationGeoGraphicCoOrdinates,
+        northeast: pickupGeoGraphicCoOrdinates,
+      );
+    } else if (pickupGeoGraphicCoOrdinates.longitude >
+        dropOffDestinationGeoGraphicCoOrdinates.longitude) {
+      boundsLatLng = LatLngBounds(
+        southwest: LatLng(pickupGeoGraphicCoOrdinates.latitude,
+            dropOffDestinationGeoGraphicCoOrdinates.longitude),
+        northeast: LatLng(dropOffDestinationGeoGraphicCoOrdinates.latitude,
+            pickupGeoGraphicCoOrdinates.longitude),
+      );
+    } else if (pickupGeoGraphicCoOrdinates.latitude >
+        dropOffDestinationGeoGraphicCoOrdinates.latitude) {
+      boundsLatLng = LatLngBounds(
+        southwest: LatLng(dropOffDestinationGeoGraphicCoOrdinates.latitude,
+            pickupGeoGraphicCoOrdinates.longitude),
+        northeast: LatLng(pickupGeoGraphicCoOrdinates.latitude,
+            dropOffDestinationGeoGraphicCoOrdinates.longitude),
+      );
+    } else {
+      boundsLatLng = LatLngBounds(
+        southwest: pickupGeoGraphicCoOrdinates,
+        northeast: dropOffDestinationGeoGraphicCoOrdinates,
+      );
+    }
+
+    controllerGoogleMap!
+        .animateCamera(CameraUpdate.newLatLngBounds(boundsLatLng, 72));
+
+    ///add markers to pickup and dropOffDestination points
+    Marker pickUpPointMarker = Marker(
+      markerId: const MarkerId("pickUpPointMarkerID"),
+      position: pickupGeoGraphicCoOrdinates,
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+      infoWindow: InfoWindow(
+          title: pickUpLocation.placeName, snippet: "Pickup Location"),
+    );
+
+    Marker dropOffDestinationPointMarker = Marker(
+      markerId: const MarkerId("dropOffDestinationPointMarkerID"),
+      position: dropOffDestinationGeoGraphicCoOrdinates,
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow),
+      infoWindow: InfoWindow(
+          title: dropOffDestinationLocation.placeName,
+          snippet: "Destination Location"),
+    );
+
+    setState(() {
+      markerSet.add(pickUpPointMarker);
+      markerSet.add(dropOffDestinationPointMarker);
+    });
+
+    ///add circles to pickup and dropOffDestination points
+    Circle pickUpPointCircle = Circle(
+      circleId: const CircleId('pickupCircleID'),
+      strokeColor: Colors.blue,
+      strokeWidth: 4,
+      radius: 14,
+      center: pickupGeoGraphicCoOrdinates,
+      fillColor: Colors.pink,
+    );
+
+    Circle dropOffDestinationPointCircle = Circle(
+      circleId: const CircleId('dropOffDestinationCircleID'),
+      strokeColor: Colors.blue,
+      strokeWidth: 4,
+      radius: 14,
+      center: dropOffDestinationGeoGraphicCoOrdinates,
+      fillColor: Colors.pink,
+    );
+
+    setState(() {
+      circleSet.add(pickUpPointCircle);
+      circleSet.add(dropOffDestinationPointCircle);
+    });
   }
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-
           ///Google Map
           GoogleMap(
-            padding: EdgeInsets.only(top: 50,bottom: bottomMapPadding),
-              mapType: MapType.normal,
-              myLocationEnabled: true,
-              initialCameraPosition: googleGooglePlexInitialPosition,
-            onMapCreated: (GoogleMapController mapController){
-                controllerGoogleMap=mapController;
-                updateMapTheme(controllerGoogleMap!);
-                googleMapCompleterController.complete(controllerGoogleMap);
+            padding: EdgeInsets.only(top: 50, bottom: bottomMapPadding),
+            mapType: MapType.normal,
+            myLocationEnabled: true,
+            polylines: polylineSet,
+            markers: markerSet,
+            circles: circleSet,
+            initialCameraPosition: googleGooglePlexInitialPosition,
+            onMapCreated: (GoogleMapController mapController) {
+              controllerGoogleMap = mapController;
+              updateMapTheme(controllerGoogleMap!);
 
-                setState(() {
-                  bottomMapPadding = 300;
-                });
+              googleMapCompleterController.complete(controllerGoogleMap);
 
-                getCurrentLiveLocationOfUser();
+              setState(() {
+                bottomMapPadding = 300;
+              });
 
+              getCurrentLiveLocationOfUser();
             },
-
           ),
 
           ///drawer button
@@ -139,8 +267,7 @@ class _StarTripPageState extends State<StarTripPage> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
-                boxShadow: const
-                [
+                boxShadow: const [
                   BoxShadow(
                     color: Colors.black26,
                     blurRadius: 5,
@@ -149,7 +276,7 @@ class _StarTripPageState extends State<StarTripPage> {
                   ),
                 ],
               ),
-              child:  CircleAvatar(
+              child: CircleAvatar(
                 backgroundColor: Colors.white,
                 radius: 20,
                 child: IconButton(
@@ -177,15 +304,19 @@ class _StarTripPageState extends State<StarTripPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-
                   ElevatedButton(
-                    onPressed: () async
-                    {
-                      var responseFromSearchPage = await Navigator.push(context, MaterialPageRoute(builder: (c)=> SearchDestinationPage()));
+                    onPressed: () async {
+                      var responseFromSearchPage = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (c) => SearchDestinationPage()));
 
-                      if(responseFromSearchPage == "placeSelected")
-                      {
-                        String dropOffLocation = Provider.of<AppInfo>(context, listen: false).dropOffLocation!.placeName ?? "";
+                      if (responseFromSearchPage == "placeSelected") {
+                        String dropOffLocation =
+                            Provider.of<AppInfo>(context, listen: false)
+                                    .dropOffLocation!
+                                    .placeName ??
+                                "";
                         print("dropOffLocation = " + dropOffLocation);
                         displayUserRideDetailsContainer();
                       }
@@ -193,48 +324,41 @@ class _StarTripPageState extends State<StarTripPage> {
                     style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
                         shape: const CircleBorder(),
-                        padding: const EdgeInsets.all(24)
-                    ),
-                    child:  Icon(
+                        padding: const EdgeInsets.all(24)),
+                    child: Icon(
                       Icons.search,
                       color: AppColor.iconColor,
                       size: 25,
                     ),
                   ),
-
                   ElevatedButton(
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
                         shape: const CircleBorder(),
-                        padding: const EdgeInsets.all(24)
-                    ),
-                    child:  Icon(
+                        padding: const EdgeInsets.all(24)),
+                    child: Icon(
                       Icons.home,
                       color: AppColor.iconColor,
                       size: 25,
                     ),
                   ),
-
                   ElevatedButton(
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
                         shape: const CircleBorder(),
-                        padding: const EdgeInsets.all(24)
-                    ),
-                    child:  Icon(
+                        padding: const EdgeInsets.all(24)),
+                    child: Icon(
                       Icons.work,
                       color: AppColor.iconColor,
                       size: 25,
                     ),
                   ),
-
                 ],
               ),
             ),
           ),
-
 
           Positioned(
             left: 0,
@@ -244,9 +368,10 @@ class _StarTripPageState extends State<StarTripPage> {
               height: rideDetailsContainerHeight,
               decoration: const BoxDecoration(
                 color: Colors.black54,
-                borderRadius: BorderRadius.only(topLeft: Radius.circular(15), topRight: Radius.circular(15)),
-                boxShadow:
-                [
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(15),
+                    topRight: Radius.circular(15)),
+                boxShadow: [
                   BoxShadow(
                     color: Colors.white12,
                     blurRadius: 15.0,
@@ -260,7 +385,6 @@ class _StarTripPageState extends State<StarTripPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-
                     Padding(
                       padding: const EdgeInsets.only(left: 16, right: 16),
                       child: SizedBox(
@@ -275,23 +399,29 @@ class _StarTripPageState extends State<StarTripPage> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-
                                   Padding(
-                                    padding: const EdgeInsets.only(left: 8, right: 8),
+                                    padding: const EdgeInsets.only(
+                                        left: 8, right: 8),
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
-                                          (tripDirectionDetailsInfo != null) ? tripDirectionDetailsInfo!.distanceTextString! : "",
+                                          (tripDirectionDetailsInfo != null)
+                                              ? tripDirectionDetailsInfo!
+                                                  .distanceTextString!
+                                              : "",
                                           style: const TextStyle(
                                             fontSize: 16,
                                             color: Colors.white70,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
-
                                         Text(
-                                          (tripDirectionDetailsInfo != null) ? tripDirectionDetailsInfo!.durationTextString! : "",
+                                          (tripDirectionDetailsInfo != null)
+                                              ? tripDirectionDetailsInfo!
+                                                  .durationTextString!
+                                              : "",
                                           style: const TextStyle(
                                             fontSize: 16,
                                             color: Colors.white70,
@@ -301,18 +431,19 @@ class _StarTripPageState extends State<StarTripPage> {
                                       ],
                                     ),
                                   ),
-
-                                  IconButton(onPressed: (){}, icon: Icon(Icons.bus_alert_rounded)),
-
+                                  IconButton(
+                                      onPressed: () {},
+                                      icon: Icon(Icons.bus_alert_rounded)),
                                   Text(
-                                    (tripDirectionDetailsInfo != null) ? "Points: ${(cMethods.calculateFareAmount(tripDirectionDetailsInfo!)).toString()}" : "",
+                                    (tripDirectionDetailsInfo != null)
+                                        ? "Points: ${(cMethods.calculateFareAmount(tripDirectionDetailsInfo!)).toString()}"
+                                        : "",
                                     style: const TextStyle(
                                       fontSize: 18,
                                       color: Colors.white70,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-
                                 ],
                               ),
                             ),
@@ -320,15 +451,11 @@ class _StarTripPageState extends State<StarTripPage> {
                         ),
                       ),
                     ),
-
                   ],
                 ),
               ),
             ),
           ),
-
-
-
         ],
       ),
     );
