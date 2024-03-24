@@ -4,7 +4,11 @@ import 'package:provider/provider.dart';
 
 import '../appInfo/app_info.dart';
 import '../colors.dart';
+import '../comman_var.dart';
+import '../componants/prediction_place_ui.dart';
+import '../methods/commonMethods.dart';
 import '../methods/sizes.dart';
+import '../models/prediction_model.dart';
 
 class SearchDestinationPage extends StatefulWidget {
   const SearchDestinationPage({super.key});
@@ -20,12 +24,42 @@ class _SearchDestinationPageState extends State<SearchDestinationPage>
   TextEditingController getINTextEditingController = TextEditingController();
   TextEditingController destinationTextEditingController = TextEditingController();
 
+  List<PredictionModel> dropOffPredictionsPlacesList = [];
+
+  ///Places API - Place AutoComplete
+  searchLocation(String locationName) async
+  {
+    if(locationName.length > 1)
+    {
+      String apiPlacesUrl = "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$locationName&key=$googleMapKey&components=country:lk";
+
+      var responseFromPlacesAPI = await CommonMethods.sendRequestToAPI(apiPlacesUrl);
+
+      if(responseFromPlacesAPI == "error")
+      {
+        return;
+      }
+
+      if(responseFromPlacesAPI["status"] == "OK")
+      {
+        var predictionResultInJson = responseFromPlacesAPI["predictions"];
+        var predictionsList = (predictionResultInJson as List).map((eachPlacePrediction) => PredictionModel.fromJson(eachPlacePrediction)).toList();
+
+        setState(() {
+          dropOffPredictionsPlacesList = predictionsList;
+        });
+
+        print('Prediction Result: $predictionResultInJson');
+      }
+    }
+  }
+
 
 
   @override
   Widget build(BuildContext context)
   {
-    String userAddress = Provider.of<AppInfo>(context, listen: false).pickUpLocation!.humanReadableAddress ?? "";
+    String userAddress = Provider.of<AppInfo>(context, listen: false).pickUpLocation?.humanReadableAddress ?? "";
     getINTextEditingController.text = userAddress;
     return Scaffold(
       body: SingleChildScrollView(
@@ -155,6 +189,10 @@ class _SearchDestinationPageState extends State<SearchDestinationPage>
                                 padding: const EdgeInsets.all(3),
                                 child: TextField(
                                   controller: destinationTextEditingController,
+                                  onChanged: (inputText)
+                                  {
+                                    searchLocation(inputText);
+                                  },
                                   decoration: const InputDecoration(
                                       hintText: "Destination Address",
                                       fillColor: Colors.white,
@@ -176,6 +214,29 @@ class _SearchDestinationPageState extends State<SearchDestinationPage>
                 ),
               ),
             ),
+
+            //display prediction results for destination place
+            (dropOffPredictionsPlacesList.length > 0)
+                ? Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              child: ListView.separated(
+                padding: const EdgeInsets.all(0),
+                itemBuilder: (context, index)
+                {
+                  return Card(
+                    elevation: 3,
+                    child: PredictionPlaceUI(
+                      predictedPlaceData: dropOffPredictionsPlacesList[index],
+                    ),
+                  );
+                },
+                separatorBuilder: (BuildContext context, int index) => const SizedBox(height: 2,),
+                itemCount: dropOffPredictionsPlacesList.length,
+                shrinkWrap: true,
+                physics: const ClampingScrollPhysics(),
+              ),
+            )
+                : Container(),
 
           ],
         ),
