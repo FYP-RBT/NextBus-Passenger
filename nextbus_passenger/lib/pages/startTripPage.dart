@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:nextbus_passenger/comman_var.dart';
 import 'package:nextbus_passenger/methods/commonMethods.dart';
 import 'package:nextbus_passenger/pages/search_destination_page.dart';
@@ -48,6 +49,8 @@ class _StarTripPageState extends State<StarTripPage> {
 
   double requestContainerHeight = 0;
   double tripContainerHeight = 0;
+
+  String stateOfApp = "normal";
 
   void updateMapTheme(GoogleMapController controller) {
     getJsonFileFromThemes('themes/map_night.json')
@@ -262,6 +265,27 @@ class _StarTripPageState extends State<StarTripPage> {
     });
   }
 
+  cancelRideRequest()
+  {
+    //remove ride request from database
+
+    setState(() {
+      stateOfApp = "normal";
+    });
+  }
+
+  displayRequestContainer()
+  {
+    setState(() {
+      rideDetailsContainerHeight = 0;
+      requestContainerHeight = 220;
+      bottomMapPadding = 200;
+      isDrawerOpened = true;
+    });
+
+    //send ride request
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -398,6 +422,8 @@ class _StarTripPageState extends State<StarTripPage> {
             ),
           ),
 
+
+          ///ride details container
           Positioned(
             left: 0,
             right: 0,
@@ -470,8 +496,14 @@ class _StarTripPageState extends State<StarTripPage> {
                                     ),
                                   ),
                                   IconButton(
-                                      onPressed: () {},
-                                      icon: Icon(Icons.bus_alert_rounded)),
+                                      onPressed: () {
+                                        setState(() {
+                                          stateOfApp = "requesting";
+                                        });
+
+                                        displayRequestContainer();
+                                      },
+                                      icon: Icon(Icons.bus_alert_rounded,size: 40,)),
                                   Text(
                                     (tripDirectionDetailsInfo != null)
                                         ? "Points: ${(cMethods.calculateFareAmount(tripDirectionDetailsInfo!)).toString()}"
@@ -494,6 +526,78 @@ class _StarTripPageState extends State<StarTripPage> {
               ),
             ),
           ),
+
+
+          ///request container
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              height: requestContainerHeight,
+              decoration: const BoxDecoration(
+                color: Colors.black54,
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
+                boxShadow:
+                [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 15.0,
+                    spreadRadius: 0.5,
+                    offset: Offset(
+                      0.7,
+                      0.7,
+                    ),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+
+                    const SizedBox(height: 12,),
+
+                    SizedBox(
+                      width: 200,
+                      child: LoadingAnimationWidget.flickr(
+                        leftDotColor: Colors.greenAccent,
+                        rightDotColor: Colors.pinkAccent,
+                        size: 50,
+                      ),
+                    ),
+
+                    const SizedBox(height: 20,),
+
+                    GestureDetector(
+                      onTap: ()
+                      {
+                        resetAppNow();
+                        cancelRideRequest();
+                      },
+                      child: Container(
+                        height: 50,
+                        width: 50,
+                        decoration: BoxDecoration(
+                          color: Colors.white70,
+                          borderRadius: BorderRadius.circular(25),
+                          border: Border.all(width: 1.5, color: Colors.grey),
+                        ),
+                        child: const Icon(
+                          Icons.close,
+                          color: Colors.black,
+                          size: 25,
+                        ),
+                      ),
+                    ),
+
+                  ],
+                ),
+              ),
+            ),
+          ),
+
         ],
       ),
     );
