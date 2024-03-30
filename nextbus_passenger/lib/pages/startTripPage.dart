@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
@@ -57,6 +58,9 @@ class _StarTripPageState extends State<StarTripPage> {
 
   bool nearbyOnlineDriversKeysLoaded = false;
   BitmapDescriptor? carIconNearbyDriver;
+
+  DatabaseReference? tripRequestRef;
+  List<OnlineNearbyDrivers>? availableNearbyOnlineDriversList;
 
   makeDriverNearbyCarIcon()
   {
@@ -290,6 +294,7 @@ class _StarTripPageState extends State<StarTripPage> {
   cancelRideRequest()
   {
     //remove ride request from database
+    tripRequestRef!.remove();
 
     setState(() {
       stateOfApp = "normal";
@@ -306,6 +311,7 @@ class _StarTripPageState extends State<StarTripPage> {
     });
 
     //send ride request
+    makeTripRequest();
   }
 
   updateAvailableNearbyOnlineDriversOnMap()
@@ -392,6 +398,60 @@ class _StarTripPageState extends State<StarTripPage> {
         }
       }
     });
+  }
+
+  makeTripRequest()
+  {
+    tripRequestRef = FirebaseDatabase.instance.ref().child("tripRequests").push();
+
+    var pickUpLocation = Provider.of<AppInfo>(context, listen: false).pickUpLocation;
+    var dropOffDestinationLocation = Provider.of<AppInfo>(context, listen: false).dropOffLocation;
+
+    Map pickUpCoOrdinatesMap =
+    {
+      "latitude": pickUpLocation!.latitudePosition.toString(),
+      "longitude": pickUpLocation.longitudePosition.toString(),
+    };
+
+    Map dropOffDestinationCoOrdinatesMap =
+    {
+      "latitude": dropOffDestinationLocation!.latitudePosition.toString(),
+      "longitude": dropOffDestinationLocation.longitudePosition.toString(),
+    };
+
+    Map driverCoOrdinates =
+    {
+      "latitude": "",
+      "longitude": "",
+    };
+
+    Map dataMap =
+    {
+      "tripID": tripRequestRef!.key,
+      "publishDateTime": DateTime.now().toString(),
+
+      "userName": userName,
+      "userPhone": userPhone,
+      "userID": userID,
+      "pickUpLatLng": pickUpCoOrdinatesMap,
+      "dropOffLatLng": dropOffDestinationCoOrdinatesMap,
+      "pickUpAddress": pickUpLocation.placeName,
+      "dropOffAddress": dropOffDestinationLocation.placeName,
+
+      "busRoute": "122",
+
+      "driverID": "waiting",
+      "carDetails": "",
+      "driverLocation": driverCoOrdinates,
+      "driverName": "",
+      "driverPhone": "",
+      "driverPhoto": "",
+      "fareAmount": "",
+      "status": "new",
+    };
+
+    tripRequestRef!.set(dataMap);
+
   }
 
   @override

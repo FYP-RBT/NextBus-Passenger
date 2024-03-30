@@ -39,6 +39,7 @@ class _HomePageState extends State<HomePage> {
           setState(() {
             userName = (snap.snapshot.value as Map)['name'];
             userEmail = (snap.snapshot.value as Map)['email'];
+            userPhone = (snap.snapshot.value as Map)['phone'];
           });
 
         }
