@@ -14,11 +14,14 @@ import 'package:nextbus_passenger/comman_var.dart';
 import 'package:nextbus_passenger/methods/commonMethods.dart';
 import 'package:nextbus_passenger/pages/search_destination_page.dart';
 import 'package:provider/provider.dart';
+import 'package:restart_app/restart_app.dart';
 
 import '../appInfo/app_info.dart';
 import '../colors.dart';
+import '../componants/info_dialog.dart';
 import '../componants/loading.dart';
 import '../methods/manage_drivers_methods.dart';
+import '../methods/push_notification_service.dart';
 import '../models/direction_details.dart';
 import '../models/online_nearby_drivers.dart';
 import '../trip_var.dart';
@@ -289,6 +292,8 @@ class _StarTripPageState extends State<StarTripPage> {
       carDetailsDriver = "";
       tripStatusDisplay = 'Driver is Arriving';
     });
+
+    Restart.restartApp();
   }
 
   cancelRideRequest()
@@ -452,6 +457,78 @@ class _StarTripPageState extends State<StarTripPage> {
 
     tripRequestRef!.set(dataMap);
 
+  }
+
+
+  noDriverAvailable()
+  {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) => InfoDialog(
+          title: "No Bus Available",
+          description: "No bus found in the nearby location. Please try again shortly.",
+        )
+    );
+  }
+
+
+  searchDriver()
+  {
+    if(availableNearbyOnlineDriversList!.length == 0)
+    {
+      cancelRideRequest();
+      resetAppNow();
+      noDriverAvailable();
+      return;
+    }
+
+    var currentDriver = availableNearbyOnlineDriversList![0];
+
+    //send notification to this currentDriver
+
+    sendNotificationToDriver(currentDriver);
+
+    availableNearbyOnlineDriversList!.removeAt(0);
+  }
+
+
+  sendNotificationToDriver(OnlineNearbyDrivers currentDriver)
+  {
+    //update driver's newTripStatus - assign tripID to current driver
+    DatabaseReference currentDriverRef = FirebaseDatabase.instance
+        .ref()
+        .child("drivers")
+        .child(currentDriver.uidDriver.toString())
+        .child("newTripStatus");
+
+    currentDriverRef.set(tripRequestRef!.key);
+
+    //get current driver device recognition token
+    DatabaseReference tokenOfCurrentDriverRef = FirebaseDatabase.instance
+        .ref()
+        .child("drivers")
+        .child(currentDriver.uidDriver.toString())
+        .child("deviceToken");
+
+    tokenOfCurrentDriverRef.once().then((dataSnapshot)
+    {
+      if(dataSnapshot.snapshot.value != null)
+      {
+        String deviceToken = dataSnapshot.snapshot.value.toString();
+
+        //send notification
+        PushNotificationService.sendNotificationToSelectedDriver(
+            deviceToken,
+            context,
+            tripRequestRef!.key.toString()
+        );
+      }
+      else
+      {
+        return;
+      }
+    });
   }
 
   @override
@@ -671,6 +748,12 @@ class _StarTripPageState extends State<StarTripPage> {
                                         });
 
                                         displayRequestContainer();
+
+                                        //get nearest available online drivers
+                                        availableNearbyOnlineDriversList = ManageDriversMethods.nearbyOnlineDriversList;
+
+                                        //search driver
+                                        searchDriver();
                                       },
                                       icon: Icon(Icons.bus_alert_rounded,size: 40,)),
                                   Text(
