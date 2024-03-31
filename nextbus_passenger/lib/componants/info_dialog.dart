@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../pages/startTripPage.dart';
+
 class InfoDialog extends StatefulWidget
 {
   String? title, description;
@@ -61,6 +63,12 @@ class _InfoDialogState extends State<InfoDialog>
                     onPressed: ()
                     {
                       Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => StarTripPage(),
+                        ),
+                      );
                     },
                     child: const Text(
                       "OK",
