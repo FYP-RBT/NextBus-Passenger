@@ -49,6 +49,7 @@ dependencies:
   loading_animation_widget: ^1.2.1
   flutter_geofire: ^2.0.3
   restart_app:
+  url_launcher: ^6.1.14
 
 
 dev_dependencies:

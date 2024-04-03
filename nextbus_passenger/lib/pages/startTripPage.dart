@@ -14,7 +14,7 @@ import 'package:nextbus_passenger/comman_var.dart';
 import 'package:nextbus_passenger/methods/commonMethods.dart';
 import 'package:nextbus_passenger/pages/search_destination_page.dart';
 import 'package:provider/provider.dart';
-import 'package:restart_app/restart_app.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../appInfo/app_info.dart';
 import '../colors.dart';
@@ -64,6 +64,9 @@ class _StarTripPageState extends State<StarTripPage> {
 
   DatabaseReference? tripRequestRef;
   List<OnlineNearbyDrivers>? availableNearbyOnlineDriversList;
+
+  StreamSubscription<DatabaseEvent>? tripStreamSubscription;
+  bool requestingDirectionDetailsInfo = false;
 
   makeDriverNearbyCarIcon()
   {
@@ -463,8 +466,134 @@ class _StarTripPageState extends State<StarTripPage> {
 
     tripRequestRef!.set(dataMap);
 
+    tripStreamSubscription = tripRequestRef!.onValue.listen((eventSnapshot)
+    {
+      if(eventSnapshot.snapshot.value == null)
+      {
+        return;
+      }
+
+      if((eventSnapshot.snapshot.value as Map)["driverName"] != null)
+      {
+        nameDriver = (eventSnapshot.snapshot.value as Map)["driverName"];
+      }
+
+      if((eventSnapshot.snapshot.value as Map)["driverPhone"] != null)
+      {
+        phoneNumberDriver = (eventSnapshot.snapshot.value as Map)["driverPhone"];
+      }
+
+
+      if((eventSnapshot.snapshot.value as Map)["carDetails"] != null)
+      {
+        carDetailsDriver = (eventSnapshot.snapshot.value as Map)["carDetails"];
+      }
+
+      if((eventSnapshot.snapshot.value as Map)["status"] != null)
+      {
+        status = (eventSnapshot.snapshot.value as Map)["status"];
+      }
+
+      if((eventSnapshot.snapshot.value as Map)["driverLocation"] != null)
+      {
+        double driverLatitude = double.parse((eventSnapshot.snapshot.value as Map)["driverLocation"]["latitude"].toString());
+        double driverLongitude = double.parse((eventSnapshot.snapshot.value as Map)["driverLocation"]["longitude"].toString());
+        LatLng driverCurrentLocationLatLng = LatLng(driverLatitude, driverLongitude);
+
+        if(status == "accepted")
+        {
+          //update info for pickup to user on UI
+          //info from driver current location to user pickup location
+          updateFromDriverCurrentLocationToPickUp(driverCurrentLocationLatLng);
+        }
+        else if(status == "arrived")
+        {
+          //update info for arrived - when driver reach at the pickup point of user
+          setState(() {
+            tripStatusDisplay = 'Driver has Arrived';
+          });
+        }
+        else if(status == "ontrip")
+        {
+          //update info for dropoff to user on UI
+          //info from driver current location to user dropoff location
+          updateFromDriverCurrentLocationToDropOffDestination(driverCurrentLocationLatLng);
+        }
+      }
+
+      if(status == "accepted")
+      {
+        displayTripDetailsContainer();
+
+        updateAvailableNearbyOnlineDriversOnMap();///edited as we want
+        // Geofire.stopListener();
+
+        // //remove drivers markers
+        // setState(() {
+        //   markerSet.removeWhere((element) => element.markerId.value.contains("driver"));
+        // });
+      }
+    });
+
   }
 
+
+
+  displayTripDetailsContainer()
+  {
+    setState(() {
+      requestContainerHeight = 0;
+      tripContainerHeight = 291;
+      bottomMapPadding = 281;
+    });
+  }
+
+  updateFromDriverCurrentLocationToPickUp(driverCurrentLocationLatLng) async
+  {
+    if(!requestingDirectionDetailsInfo)
+    {
+      requestingDirectionDetailsInfo = true;
+
+      var userPickUpLocationLatLng = LatLng(currentPositionOfUser!.latitude, currentPositionOfUser!.longitude);
+
+      var directionDetailsPickup = await CommonMethods.getDirectionDetailsFromAPI(driverCurrentLocationLatLng, userPickUpLocationLatLng);
+
+      if(directionDetailsPickup == null)
+      {
+        return;
+      }
+
+      setState(() {
+        tripStatusDisplay = "Driver is Coming - ${directionDetailsPickup.durationTextString} | ${directionDetailsPickup.distanceTextString}";
+      });
+
+      requestingDirectionDetailsInfo = false;
+    }
+  }
+
+  updateFromDriverCurrentLocationToDropOffDestination(driverCurrentLocationLatLng) async
+  {
+    if(!requestingDirectionDetailsInfo)
+    {
+      requestingDirectionDetailsInfo = true;
+
+      var dropOffLocation = Provider.of<AppInfo>(context, listen: false).dropOffLocation;
+      var userDropOffLocationLatLng = LatLng(dropOffLocation!.latitudePosition!, dropOffLocation.longitudePosition!);
+
+      var directionDetailsPickup = await CommonMethods.getDirectionDetailsFromAPI(driverCurrentLocationLatLng, userDropOffLocationLatLng);
+
+      if(directionDetailsPickup == null)
+      {
+        return;
+      }
+
+      setState(() {
+        tripStatusDisplay = "Driving to DropOff Location - ${directionDetailsPickup.durationTextString}";
+      });
+
+      requestingDirectionDetailsInfo = false;
+    }
+  }
 
   noDriverAvailable()
   {
@@ -889,6 +1018,139 @@ class _StarTripPageState extends State<StarTripPage> {
                           size: 25,
                         ),
                       ),
+                    ),
+
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          ///trip details container
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              height: tripContainerHeight,
+              decoration: const BoxDecoration(
+                color: Colors.black87,
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
+                boxShadow:
+                [
+                  BoxShadow(
+                    color: Colors.white24,
+                    blurRadius: 15.0,
+                    spreadRadius: 0.5,
+                    offset: Offset(
+                      0.7,
+                      0.7,
+                    ),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+
+                    const SizedBox(height: 5,),
+
+                    //trip status display text
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          tripStatusDisplay,
+                          style: const TextStyle(fontSize: 19, color: Colors.grey,),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 19,),
+
+                    const Divider(
+                      height: 1,
+                      color: Colors.white70,
+                      thickness: 1,
+                    ),
+
+                    const SizedBox(height: 19,),
+
+                    //image - driver name and driver car details
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+
+
+                        const SizedBox(width: 8,),
+
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+
+                            Text(nameDriver, style: const TextStyle(fontSize: 20, color: Colors.grey,),),
+
+                            Text(carDetailsDriver, style: const TextStyle(fontSize: 14, color: Colors.grey,),),
+
+                          ],
+                        ),
+
+                      ],
+                    ),
+
+                    const SizedBox(height: 19,),
+
+                    const Divider(
+                      height: 1,
+                      color: Colors.white70,
+                      thickness: 1,
+                    ),
+
+                    const SizedBox(height: 19,),
+
+                    //call driver btn
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+
+                        GestureDetector(
+                          onTap: ()
+                          {
+                            launchUrl(Uri.parse("tel://$phoneNumberDriver"));
+                          },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+
+                              Container(
+                                height: 50,
+                                width: 50,
+                                decoration: BoxDecoration(
+                                  borderRadius: const BorderRadius.all(Radius.circular(25)),
+                                  border: Border.all(
+                                    width: 1,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                child: const Icon(
+                                  Icons.phone,
+                                  color: Colors.white,
+                                ),
+                              ),
+
+                              const SizedBox(height: 11,),
+
+                              const Text("Call", style: TextStyle(color: Colors.grey,),),
+
+                            ],
+                          ),
+                        ),
+
+                      ],
                     ),
 
                   ],
