@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:nextbus_passenger/componants/button.dart';
 import 'package:nextbus_passenger/methods/sizes.dart';
@@ -14,7 +16,28 @@ class PointsBalance extends StatefulWidget {
 }
 
 class _PointsBalanceState extends State<PointsBalance> {
-  String get availablePoints => '0.00';
+  int currentPoints = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    getCurrentPoints();
+  }
+
+  Future<void> getCurrentPoints() async {
+    DatabaseReference pointsReference = FirebaseDatabase.instance.ref()
+        .child("users")
+        .child(FirebaseAuth.instance.currentUser!.uid)
+        .child("points");
+
+    // Fetch the points from Firebase and update the state
+    DataSnapshot snapshot = await pointsReference.get();
+    if (snapshot.exists) {
+      setState(() {
+        currentPoints = int.tryParse(snapshot.value.toString()) ?? 0;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +80,7 @@ class _PointsBalanceState extends State<PointsBalance> {
             ),
             SizedBox(height: 10,),
 
-            Text(availablePoints,style: TextStyle(fontSize: 40,fontWeight: FontWeight.bold),),
+            Text('$currentPoints.00',style: TextStyle(fontSize: 40,fontWeight: FontWeight.bold),),
 
             SizedBox(height: 15,),
 
