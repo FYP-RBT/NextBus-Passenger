@@ -5,6 +5,8 @@ import 'package:nextbus_passenger/componants/button.dart';
 import 'package:nextbus_passenger/pages/pointsBalancePage.dart';
 
 import '../colors.dart';
+import '../componants/loading.dart';
+import '../methods/commonMethods.dart';
 import '../methods/sizes.dart';
 import 'homePage.dart';
 
@@ -46,20 +48,42 @@ class _TopUpPageState extends State<TopUpPage> {
     );
   }
 
-  void addPoints() {
+  addPoints() async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) =>
+          LoadingDialog(messageText: 'Updating your points...'),
+    );
+
     int finalAmount =
         selectedAmount ?? int.tryParse(otherAmountController.text) ?? 0;
     print('Selected top-up amount: LKR $finalAmount');
-    otherAmountController.clear();
-    // Here you can add your code to handle the selected amount.
+
     newPointsReference = FirebaseDatabase.instance.ref()
         .child("users")
         .child(FirebaseAuth.instance.currentUser!.uid);
 
-    newPointsReference!.child("points").set(finalAmount);
+    // Retrieve the current points and update them with the new amount
+    DataSnapshot snapshot = await newPointsReference!.child("points").get();
+    int currentPoints = int.tryParse(snapshot.value.toString()) ?? 0;
+    int updatedPoints = currentPoints + finalAmount;
 
+    // Set the new points value in the database
+    await newPointsReference!.child("points").set(updatedPoints);
+
+    Navigator.pop(context); // Dismiss the loading dialog
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => PointsBalance()),
+          (Route<dynamic> route) => false,
+    ); // Navigates to PointsBalance page without allowing a back navigation
+
+    snackBar(context, 'Your Amount Added!', Colors.green.shade500);
   }
-  
+
+
 
   @override
   Widget build(BuildContext context) {
