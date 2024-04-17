@@ -20,6 +20,7 @@ import '../appInfo/app_info.dart';
 import '../colors.dart';
 import '../componants/info_dialog.dart';
 import '../componants/loading.dart';
+import '../componants/payment_dialog.dart';
 import '../methods/manage_drivers_methods.dart';
 import '../methods/push_notification_service.dart';
 import '../models/direction_details.dart';
@@ -467,7 +468,7 @@ class _StarTripPageState extends State<StarTripPage> {
     tripRequestRef!.set(dataMap);
 
     tripStreamSubscription = tripRequestRef!.onValue.listen((eventSnapshot)
-    {
+    async {
       if(eventSnapshot.snapshot.value == null)
       {
         return;
@@ -533,6 +534,38 @@ class _StarTripPageState extends State<StarTripPage> {
         //   markerSet.removeWhere((element) => element.markerId.value.contains("driver"));
         // });
       }
+
+      if(status == "ended")
+      {
+        if((eventSnapshot.snapshot.value as Map)["fareAmount"] != null)
+        {
+          double fareAmount = double.parse((eventSnapshot.snapshot.value as Map)["fareAmount"].toString());
+
+          var responseFromPaymentDialog = await showDialog(
+            context: context,
+            builder: (BuildContext context) => PaymentDialog(fareAmount: fareAmount.toString()),
+          );
+
+          if(responseFromPaymentDialog == "paid")
+          {
+            tripRequestRef!.onDisconnect();
+            tripRequestRef = null;
+
+            tripStreamSubscription!.cancel();
+            tripStreamSubscription = null;
+
+            resetAppNow();
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => StarTripPage(),
+              ),
+            );
+          }
+        }
+      }
+
     });
 
   }
