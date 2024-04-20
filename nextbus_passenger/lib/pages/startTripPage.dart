@@ -69,6 +69,10 @@ class _StarTripPageState extends State<StarTripPage> {
   StreamSubscription<DatabaseEvent>? tripStreamSubscription;
   bool requestingDirectionDetailsInfo = false;
 
+  String selectedRouteNumber = '122';  // Default value
+  List<String> routeNumbers = ['122', '144', '177'];  // List of available routes
+
+
   makeDriverNearbyCarIcon()
   {
     if(carIconNearbyDriver == null)
@@ -453,7 +457,7 @@ class _StarTripPageState extends State<StarTripPage> {
       "pickUpAddress": pickUpLocation.placeName,
       "dropOffAddress": dropOffDestinationLocation.placeName,
 
-      "busRoute": "122",
+      "busRoute": selectedRouteNumber,
 
       "driverID": "waiting",
       "carDetails": "",
@@ -918,6 +922,50 @@ class _StarTripPageState extends State<StarTripPage> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
+
+                                  Expanded(
+                                    child: Container(
+                                      width: 80,
+                                      height: 35, // Sets the height of the dropdown button container
+                                      padding: EdgeInsets.symmetric(vertical: 4), // Adjust vertical padding to reduce the button's height
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(4.0), // Optional: for rounded corners
+                                        border: Border.all(
+                                          color: Colors.grey, // Color of the border
+                                          width: 0.5, // Width of the border
+                                        ),
+                                      ),
+                                      child: DropdownButton<String>(
+                                        isExpanded: true, // Makes the dropdown button expand to fill the container
+                                        value: selectedRouteNumber,
+                                        style: const TextStyle(color: Colors.white, fontSize: 14),
+                                        underline: Container(
+                                          height: 0, // Remove underline
+                                        ),
+                                        onChanged: (String? newValue) {
+                                          setState(() {
+                                            selectedRouteNumber = newValue!;
+                                            print("Selected Route Number: $selectedRouteNumber");
+                                          });
+                                        },
+                                        items: routeNumbers.map<DropdownMenuItem<String>>((String value) {
+                                          return DropdownMenuItem<String>(
+                                            value: value,
+                                            child: Container(
+                                              height: 35, // Sets the height of each dropdown item
+                                              alignment: Alignment.centerLeft,
+                                              padding: EdgeInsets.symmetric(horizontal: 10), // Adjust item's horizontal padding
+                                              child: Text(value, style: TextStyle(color: Colors.black, fontSize: 18)),
+                                            ),
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ),
+                                  ),
+
+
+                                  SizedBox(height:10),
+
                                   Padding(
                                     padding: const EdgeInsets.only(
                                         left: 8, right: 8),
@@ -965,6 +1013,8 @@ class _StarTripPageState extends State<StarTripPage> {
                                         searchDriver();
                                       },
                                       icon: Icon(Icons.bus_alert_rounded,size: 40,)),
+
+                                  SizedBox(height:10),
                                   Text(
                                     (tripDirectionDetailsInfo != null)
                                         ? "Points: ${(cMethods.calculateFareAmount(tripDirectionDetailsInfo!)).toString()}"
