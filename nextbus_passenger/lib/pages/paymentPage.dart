@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 import 'package:nextbus_passenger/methods/sizes.dart';
@@ -18,6 +20,31 @@ class _PaymentPageState extends State<PaymentPage> {
   bool isChecked1 = false;
   bool isChecked2 = false;
   bool isChecked3 = false;
+
+
+  int currentPoints = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    getCurrentPoints();
+  }
+
+  Future<void> getCurrentPoints() async {
+    DatabaseReference pointsReference = FirebaseDatabase.instance.ref()
+        .child("users")
+        .child(FirebaseAuth.instance.currentUser!.uid)
+        .child("points");
+
+    // Fetch the points from Firebase and update the state
+    DataSnapshot snapshot = await pointsReference.get();
+    if (snapshot.exists) {
+      setState(() {
+        currentPoints = int.tryParse(snapshot.value.toString()) ?? 0;
+      });
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +68,7 @@ class _PaymentPageState extends State<PaymentPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => HomePage()),
+                              builder: (context) => const HomePage()),
                         );
                       },
                       icon: Icon(
@@ -59,7 +86,7 @@ class _PaymentPageState extends State<PaymentPage> {
               ],
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Row(
@@ -85,7 +112,7 @@ class _PaymentPageState extends State<PaymentPage> {
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
                 Padding(
@@ -98,7 +125,7 @@ class _PaymentPageState extends State<PaymentPage> {
               ],
             ),
           ),
-          Divider(
+          const Divider(
             thickness: 2,
             height: 30,
             indent: 25,
@@ -129,22 +156,19 @@ class _PaymentPageState extends State<PaymentPage> {
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 2.5,
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 7.0),
-                  child: Image.asset(
-                    'images/points.png',
-                    height: 28,
-                  ),
+                  padding: const EdgeInsets.only(left: 15.0,right: 75),
+                  child: Text('Points - ($currentPoints pts)',style: const TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
                 ),
                 IconButton(
                     onPressed: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => PointsBalance()),
+                            builder: (context) => const PointsBalance()),
                       );
                     },
                     icon: Icon(
@@ -154,7 +178,7 @@ class _PaymentPageState extends State<PaymentPage> {
               ],
             ),
           ),
-          Divider(
+          const Divider(
             thickness: 2,
             height: 30,
             indent: 25,
@@ -186,7 +210,7 @@ class _PaymentPageState extends State<PaymentPage> {
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 12,
                 ),
                 Padding(
@@ -207,7 +231,7 @@ class _PaymentPageState extends State<PaymentPage> {
               ],
             ),
           ),
-          Divider(
+          const Divider(
             thickness: 2,
             height: 30,
             indent: 25,
@@ -216,15 +240,15 @@ class _PaymentPageState extends State<PaymentPage> {
 
           Row(
             children: [
-              SizedBox(width: 25,),
+              const SizedBox(width: 25,),
               TextButton(
                   onPressed: (){},
-                  child: Text('Add payment method   +',style: TextStyle(fontSize: 18),)),
+                  child: const Text('Add payment method   +',style: TextStyle(fontSize: 18),)),
             ],
           )
         ],
       ),
-      bottomNavigationBar: MyNavBar(selectedIndex: 2,),
+      bottomNavigationBar: const MyNavBar(selectedIndex: 2,),
     );
   }
 }
