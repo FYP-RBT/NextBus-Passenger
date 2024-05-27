@@ -44,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  signInUser()async{
+  signInUser() async {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -53,23 +53,27 @@ class _LoginPageState extends State<LoginPage> {
     );
 
     final User? userFirebase = (await FirebaseAuth.instance
-        .signInWithEmailAndPassword(
+            .signInWithEmailAndPassword(
       email: emailOrPhoneController.text.trim(),
       password: passwordController.text.trim(),
-    ).catchError((errorMsg){
+    )
+            .catchError((errorMsg) {
       Navigator.pop(context);
       snackBar(context, 'Incorrect email or password!', Colors.red);
-    })
-    ).user;
+    }))
+        .user;
 
-    if(!context.mounted)return;
+    if (!context.mounted) return;
     Navigator.pop(context);
 
-    if(userFirebase != null){
-      DatabaseReference userRef = FirebaseDatabase.instance.ref().child('users').child(userFirebase.uid);
-      userRef.once().then((snap){
-        if(snap.snapshot.value!=null){
-          if((snap.snapshot.value as Map)['blockStatus']=='no'){
+    if (userFirebase != null) {
+      DatabaseReference userRef = FirebaseDatabase.instance
+          .ref()
+          .child('users')
+          .child(userFirebase.uid);
+      userRef.once().then((snap) {
+        if (snap.snapshot.value != null) {
+          if ((snap.snapshot.value as Map)['blockStatus'] == 'no') {
             userName = (snap.snapshot.value as Map)['name'];
             userEmail = (snap.snapshot.value as Map)['email'];
             userPhone = (snap.snapshot.value as Map)['phone'];
@@ -77,22 +81,17 @@ class _LoginPageState extends State<LoginPage> {
               context,
               MaterialPageRoute(builder: (context) => HomePage()),
             );
-
-        }
-          else{
-            snackBar(context, 'You are blocked, Contact admin!',
-                Colors.redAccent);
+          } else {
+            snackBar(
+                context, 'You are blocked, Contact admin!', Colors.redAccent);
             FirebaseAuth.instance.signOut();
-
           }
-
-        }
-        else{
+        } else {
           FirebaseAuth.instance.signOut();
-          snackBar(context, 'Your record do not exist as user..',
-              Colors.redAccent);
+          snackBar(
+              context, 'Your record do not exist as user..', Colors.redAccent);
         }
-        });
+      });
     }
   }
 
@@ -128,7 +127,8 @@ class _LoginPageState extends State<LoginPage> {
                 suffixIcon: Icon(
                   Icons.person_outline_rounded,
                   color: AppColor.iconColor,
-                ), keyboardType: TextInputType.emailAddress,
+                ),
+                keyboardType: TextInputType.emailAddress,
               ),
               Padding(
                 padding:
@@ -184,7 +184,6 @@ class _LoginPageState extends State<LoginPage> {
               ),
               MyButton(
                   onTap: () {
-
                     checkIfNetworkIsAvailable();
                   },
                   childText: 'Log In',
